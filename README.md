@@ -15,6 +15,7 @@ CREATE DATABASE no_se_cae_mas
 ```
 
 ## Correr tests
+Gracias a JaCoCo, después de correr las tests podemos encontrar coverage en `target/site/jacoco`.
 ```shell script
 mvn clean compile test
 ```
