@@ -18,14 +18,16 @@ import static org.tacs.grupocuatro.entity.ApplicationRoles.*;
 public class Server {
     // poner en otro lado?
     public static boolean DEBUG = true;
-
+    public static int OURPORT  = 8080;
+    public static String TEST_STRING =  "Hello, Javelin.";
+    
     public static void main(String[] args) {
-        Javalin app = Javalin.create().start(8080);
+        Javalin app = Javalin.create().start(OURPORT);
         app.config.accessManager(Server::handleAuth);
 
         app.before(ctx -> authenticateGitHub());
 
-        app.get("/", ctx -> ctx.html("Hello, Javelin."));
+        app.get("/", ctx -> ctx.html(TEST_STRING));
         app.routes(() -> {
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
