@@ -46,6 +46,7 @@ public class Server {
             path("/me", () -> {
                 get(UserController::me, roles(USER));
                 post("/favorites", UserController::addFavoriteRepo, roles(USER));
+                delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
             });
         });
     }

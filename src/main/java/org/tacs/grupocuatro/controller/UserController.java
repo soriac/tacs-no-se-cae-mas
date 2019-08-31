@@ -22,4 +22,8 @@ public class UserController {
     public static void compareFavorites(Context context) {
 
     }
+    
+    public static void removeFavoriteRepo(Context context) {
+
+    }
 }
