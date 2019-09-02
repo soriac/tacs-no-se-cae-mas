@@ -1,7 +1,15 @@
 package org.tacs.grupocuatro.controller;
 
+import io.javalin.core.security.Role;
 import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import org.tacs.grupocuatro.JsonResponse;
+import org.tacs.grupocuatro.Server;
+import org.tacs.grupocuatro.entity.ApplicationRoles;
+
+import java.util.Set;
+
+import static org.tacs.grupocuatro.entity.ApplicationRoles.ADMIN;
 
 public class AuthenticationController {
     public static void signup(Context ctx) {
@@ -21,6 +29,23 @@ public class AuthenticationController {
     public static void logout(Context ctx) {
         ctx.clearCookieStore();
         ctx.json(new JsonResponse("Logged out!"));
+    }
+
+    private static ApplicationRoles getUserRole(Context ctx) {
+        // debería llamar al userDAO con el id del usuario
+        // y devolver el rol de ese usuario
+        return ADMIN;
+    }
+
+    public static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
+        var role = getUserRole(ctx);
+
+        if (permittedRoles.contains(role) || Server.DEBUG && role == ADMIN) {
+            ctx.attribute("role", role);
+            handler.handle(ctx);
+        } else {
+            ctx.status(401).result("Unauthorized.");
+        }
     }
 }
 

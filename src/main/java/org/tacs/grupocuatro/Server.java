@@ -1,15 +1,10 @@
 package org.tacs.grupocuatro;
 
 import io.javalin.Javalin;
-import io.javalin.core.security.Role;
-import io.javalin.http.Context;
-import io.javalin.http.Handler;
 import org.tacs.grupocuatro.controller.AuthenticationController;
+import org.tacs.grupocuatro.controller.GitHubController;
 import org.tacs.grupocuatro.controller.RepositoryController;
 import org.tacs.grupocuatro.controller.UserController;
-import org.tacs.grupocuatro.entity.ApplicationRoles;
-
-import java.util.Set;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -23,12 +18,15 @@ public class Server {
     
     public static void main(String[] args) {
         Javalin app = Javalin.create().start(OURPORT);
-        app.config.accessManager(Server::handleAuth);
+        app.config.accessManager(AuthenticationController::handleAuth);
 
-        app.before(ctx -> authenticateGitHub());
+        app.exception(GitHubRequestLimitExceededException.class, GitHubController::handleRequestLimitExceeded);
 
-        app.get("/", ctx -> ctx.html(TEST_STRING));
+        app.get("/", ctx -> ctx.json(new JsonResponse(TEST_STRING)));
         app.routes(() -> {
+            before(GitHubController::authenticate);
+            before(GitHubController::checkRemainingRequests);
+
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
             post("/logout", AuthenticationController::logout);
@@ -53,26 +51,4 @@ public class Server {
         });
     }
 
-    private static ApplicationRoles getUserRole(Context ctx) {
-        // debería llamar al userDAO con el id del usuario
-        // y devolver el rol de ese usuario
-        return ADMIN;
-    }
-
-    private static void authenticateGitHub() {
-        // hacer alguna magia para autenticarse en github si no estamos autenticados
-        // probablemente sea un singleton, ya que si eventualmente tenemos muchas
-        // instancias, vamos a tener que autenticar en todas las instancias anyways
-    }
-
-    private static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
-        var role = getUserRole(ctx);
-
-        if (permittedRoles.contains(role) || DEBUG && role == ADMIN) {
-            ctx.attribute("role", role);
-            handler.handle(ctx);
-        } else {
-            ctx.status(401).result("Unauthorized.");
-        }
-    }
 }
