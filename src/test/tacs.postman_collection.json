@@ -1,0 +1,138 @@
+{
+	"info": {
+		"_postman_id": "aec01452-3c41-4ad5-a779-cd4deb3abb9d",
+		"name": "tacs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "testsTACS",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8083",
+					"host": [
+						"localhost"
+					],
+					"port": "8083"
+				},
+				"description": "\t"
+			},
+			"response": []
+		},
+		{
+			"name": "helloJavelin",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8083",
+					"host": [
+						"localhost"
+					],
+					"port": "8083"
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/repos/000",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8083/repos/000",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"repos",
+						"000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/repos/0000",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8083/repos/0000",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"repos",
+						"0000"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "localhost:8083/repos?language=javascript&forksCount=3&private=true&openIssuesCount=5&stargazersCount=2",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "localhost:8083/repos?language=javascript&forksCount=3&private=true&openIssuesCount=5&stargazersCount=2",
+					"host": [
+						"localhost"
+					],
+					"port": "8083",
+					"path": [
+						"repos"
+					],
+					"query": [
+						{
+							"key": "language",
+							"value": "javascript"
+						},
+						{
+							"key": "forksCount",
+							"value": "3"
+						},
+						{
+							"key": "private",
+							"value": "true"
+						},
+						{
+							"key": "openIssuesCount",
+							"value": "5"
+						},
+						{
+							"key": "stargazersCount",
+							"value": "2"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
