@@ -44,7 +44,10 @@ public class Server {
             });
 
             path("/me", () -> {
+                before(ctx -> ctx.attribute("id", ctx.cookieStore("userId")));
+
                 get(UserController::me, roles(USER));
+                get("/favorites", UserController::viewFavoriteRepos, roles(USER));
                 post("/favorites", UserController::addFavoriteRepo, roles(USER));
                 delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
             });
