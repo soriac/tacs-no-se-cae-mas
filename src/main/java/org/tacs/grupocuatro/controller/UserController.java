@@ -3,6 +3,7 @@ package org.tacs.grupocuatro.controller;
 import io.javalin.http.Context;
 import org.tacs.grupocuatro.JsonResponse;
 
+import java.io.Console;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -11,7 +12,33 @@ public class UserController {
     public static final String ID_MOCK2 = "000";
 
     public static void all(Context ctx) {
-
+    			
+        var user1 = new HashMap<String, String>();
+        user1.put("username", "username_xxx");
+        user1.put("favoriteRepoCount", "31");
+        user1.put("last_log_in", "20/04/2019");
+        user1.put("languages", "java,ruby");
+		
+        var user2 = new HashMap<String, String>();
+        user2.put("username", "username_xxx");
+        user2.put("favoriteRepoCount", "12");
+        user2.put("last_log_in", "10/10/2001");
+        user2.put("languages", "python,html");
+        
+        var user3 = new HashMap<String, String>();
+        user3.put("username", "username_xxx");
+        user3.put("favoriteRepoCount", "0");
+        user3.put("last_log_in", "11/12/2007");
+        user3.put("languages", "javascript,c");
+        
+        final var users = new ArrayList<HashMap<String, String>>();
+        users.add(user1);
+        users.add(user2);
+        users.add(user3);
+        
+		ctx.res.setStatus(200);
+        ctx.json(new JsonResponse("").with(users));
+    	
     }
 
     public static void one(Context context) {
@@ -31,8 +58,17 @@ public class UserController {
         }
     }
 
-    public static void me(Context context) {
-
+    public static void me(Context ctx) {
+    	var userId = ctx.cookieStore("userId");
+    	if(userId == null) {
+    		ctx.res.setStatus(401);
+            ctx.json(new JsonResponse("You must be logged in to access this section."));
+    	} else {
+    		var info = new HashMap<String, String>();
+            info.put("userId", Integer.toString((int) userId));
+            ctx.res.setStatus(200);
+            ctx.json(new JsonResponse("").with(info));
+    	}
     }
 
     public static void compareFavorites(Context context) {
