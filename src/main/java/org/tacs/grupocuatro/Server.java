@@ -39,8 +39,8 @@ public class Server {
 
             path("/repos", () -> {
                 get(RepositoryController::all, roles(USER, ADMIN));
-                get("/:id", RepositoryController::one, roles(USER, ADMIN));
                 get("/count", RepositoryController::count, roles(ADMIN));
+                get("/:id", RepositoryController::one, roles(USER, ADMIN));
             });
 
             path("/me", () -> {

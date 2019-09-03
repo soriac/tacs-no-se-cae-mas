@@ -2,6 +2,8 @@ package org.tacs.grupocuatro.controller;
 
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.javalin.http.Context;
+import org.tacs.grupocuatro.JsonResponse;
+
 
 public class RepositoryController {
 	public static final String ID_MOCK = "000";
@@ -96,7 +98,11 @@ public class RepositoryController {
 		}
     }
 
-    public static void count(Context context) {
+    public static void count(Context ctx) {
+		String since = ctx.queryParam("since");
+		int amount = 5000;
 
+		ctx.res.setStatus(200);
+		ctx.json(new JsonResponse("There are " + amount + " repositories available since " + since + "."));
     }
 }
