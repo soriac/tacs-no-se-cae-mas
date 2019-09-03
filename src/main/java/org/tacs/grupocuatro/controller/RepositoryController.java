@@ -4,6 +4,9 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 import io.javalin.http.Context;
 import org.tacs.grupocuatro.JsonResponse;
 
+import java.util.Date;
+import java.util.HashMap;
+
 
 public class RepositoryController {
 	public static final String ID_MOCK = "000";
@@ -100,9 +103,17 @@ public class RepositoryController {
 
     public static void count(Context ctx) {
 		String since = ctx.queryParam("since");
+		if (since == null) since = "0";
+
 		int amount = 5000;
 
+		var data = new HashMap<String, String>();
+		data.put("amount", "" + amount);
+		data.put("from", since);
+
+		var formattedDate = new Date(Long.parseLong(since));
+
 		ctx.res.setStatus(200);
-		ctx.json(new JsonResponse("There are " + amount + " repositories available since " + since + "."));
+		ctx.json(new JsonResponse("There are " + amount + " repositories available since " + formattedDate.toString() + "."). with(data));
     }
 }

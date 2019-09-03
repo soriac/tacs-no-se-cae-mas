@@ -33,8 +33,8 @@ public class Server {
 
             path("/users", () -> {
                 get(UserController::all, roles(ADMIN));
-                get("/:id", UserController::one, roles(ADMIN));
                 get("/compare", UserController::compareFavorites, roles(ADMIN));
+                get("/:id", UserController::one, roles(ADMIN));
             });
 
             path("/repos", () -> {
