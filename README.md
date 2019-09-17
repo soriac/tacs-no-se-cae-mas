@@ -21,3 +21,33 @@ Gracias a JaCoCo, después de correr las tests podemos encontrar coverage en `ta
 ```shell script
 mvn clean compile test
 ```
+
+### Token GitHub API
+
+La API v3 de GitHub requiere una token de acceso a una cuenta para aumentar la cantidad de request posibles.
+Para crear la token seguir estos links:
+- https://developer.github.com/v4/guides/forming-calls/#authenticating-with-graphql
+- https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line 
+
+Test para ver si funciona todo correcto
+```
+curl -H "Authorization: bearer TOKEN" -X GET https://api.github.com/graphql
+```
+
+>> La token generada la deben guardar como 'environment variable' bajo el nombre 'GITHUB_TACS' para que la app pueda usarla
+
+
+### Documentacion GitHub API
+
+- https://developer.github.com/v3/search/
+- https://help.github.com/en/articles/searching-on-github/
+- https://help.github.com/en/articles/understanding-the-search-syntax/
+
+
+
+
+
+
+
+ 
+

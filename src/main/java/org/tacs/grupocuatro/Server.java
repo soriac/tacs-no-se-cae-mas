@@ -6,6 +6,11 @@ import org.tacs.grupocuatro.controller.GitHubController;
 import org.tacs.grupocuatro.controller.RepositoryController;
 import org.tacs.grupocuatro.controller.UserController;
 
+import org.tacs.grupocuatro.github.*;
+import org.tacs.grupocuatro.github.enums.*;
+import org.tacs.grupocuatro.github.query.*;
+import org.tacs.grupocuatro.github.query.decorators.*;
+
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
 import static org.tacs.grupocuatro.entity.ApplicationRoles.*;
@@ -16,16 +21,30 @@ public class Server {
     public static int OURPORT  = 8080;
     public static String TEST_STRING =  "Hello, Javelin.";
     
-    public static void main(String[] args) {
-        Javalin app = Javalin.create().start(OURPORT);
+    public static void main(String[] args) throws GitHubConnectionException {
+        
+    	/*
+    	GitHubConnect conn = GitHubConnect.getInstance();
+    	conn.tryConnection();
+    	
+    	GitHubQueryBuilder gb = new GitHubQueryBuilder()
+    			.setSort(Sort.STARS)
+    			.setOrder(Order.ASC)
+    			.putDecorator(new Comparison(ValueType.STARS, Comparator.GREATER, 5))
+    			.putDecorator(new Operation(Operator.AND))
+    			.putDecorator(new Between(ValueType.FORKS,10,20));
+    	
+    	System.out.println(gb.build());
+    	*/
+    	
+    	Javalin app = Javalin.create().start(OURPORT);
         app.config.accessManager(AuthenticationController::handleAuth);
 
-        app.exception(GitHubRequestLimitExceededException.class, GitHubController::handleRequestLimitExceeded);
-
+        app.exception(GitHubConnectionException.class, GitHubController::handleConnectionException);
+        
         app.get("/", ctx -> ctx.json(new JsonResponse(TEST_STRING)));
         app.routes(() -> {
             before(GitHubController::authenticate);
-            before(GitHubController::checkRemainingRequests);
 
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
@@ -52,6 +71,8 @@ public class Server {
                 delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
             });
         });
+        
+    	
     }
 
 }
