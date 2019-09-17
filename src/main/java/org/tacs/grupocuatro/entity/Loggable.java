@@ -57,7 +57,7 @@ public abstract class Loggable {
     public boolean login() {
         var user = findBy(this.username);
         if (user != null) {
-            if (user.getPassword().equals(hashPassword(this.username)))
+            if (user.getPassword().equals(hashPassword(this.password)))
                 return true;
         }
         return false;
