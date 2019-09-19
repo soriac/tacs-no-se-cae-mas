@@ -1,4 +1,4 @@
-package org.tacs.grupocuatro.github;
+package org.tacs.grupocuatro.github.exceptions;
 
 public class GitHubConnectionException extends Exception{
 

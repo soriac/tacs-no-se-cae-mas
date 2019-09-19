@@ -1,9 +1,5 @@
 package org.tacs.grupocuatro;
 
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
-
 public class JsonResponse {
     private String message;
     private String error;

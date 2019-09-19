@@ -17,7 +17,7 @@ public class Comparison extends SearchByNumbers{
 	@Override
 	public String build() {
 		String str = super.build();
-		return str + ":" + this.comp.getQuery() + String.valueOf(this.num);
+		return str + "%3A" + this.comp.getQuery() + String.valueOf(this.num);
 	}
 	
 	

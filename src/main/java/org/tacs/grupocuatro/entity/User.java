@@ -6,8 +6,7 @@ import java.util.Set;
 public class User extends Loggable{
 
     private Date lastLogin;
-
-    private Set<String> favRepos;
+    private Set<Repository> favRepos;
 
     public Date getLastLogin() {
         return lastLogin;
@@ -17,20 +16,23 @@ public class User extends Loggable{
         this.lastLogin = lastLogin;
     }
 
-    public Set<String> getFavRepos() {
+    public Set<Repository> getFavRepos() {
         return favRepos;
     }
 
-    public void setFavRepos(Set<String> favRepos) {
+    public void setFavRepos(Set<Repository> favRepos) {
         this.favRepos = favRepos;
     }
 
-    public void addFavRepo(String repo){
-        try {
+    public void addFavRepo(Repository repo){
+        
+    	try {
             this.favRepos.add(repo);
         }
+        
         catch (Exception e) {
             return;
         }
+        
     }
 }

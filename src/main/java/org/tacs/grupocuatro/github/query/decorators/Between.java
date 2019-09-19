@@ -15,7 +15,7 @@ public class Between extends SearchByNumbers{
 	@Override
 	public String build() {
 		String str = super.build();
-		str = str + ":" + String.valueOf(this.min) + ".." + String.valueOf(this.max); 
+		str = str + "%3A" + String.valueOf(this.min) + ".." + String.valueOf(this.max); 
 		return str; 
 	}
 	

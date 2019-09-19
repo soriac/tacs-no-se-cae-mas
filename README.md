@@ -34,7 +34,7 @@ Test para ver si funciona todo correcto
 curl -H "Authorization: bearer TOKEN" -X GET https://api.github.com/graphql
 ```
 
->> La token generada la deben guardar como 'environment variable' bajo el nombre 'GITHUB_TACS' para que la app pueda usarla
+> La token generada la deben guardar como 'environment variable' bajo el nombre 'GITHUB_TACS' para que la app pueda usarla
 
 
 ### Documentacion GitHub API

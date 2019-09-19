@@ -10,6 +10,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.json.JSONObject;
+import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
+import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
+import org.tacs.grupocuatro.github.Parser;
 
 
 public class GitHubRequest {
@@ -24,14 +27,14 @@ public class GitHubRequest {
 		this.token = _token;
 	}
 	
-	public int test() {
+	public int doTest() {
 		
 		HttpClient client = HttpClient.newHttpClient();
 		
 		try {
 			
 			HttpRequest request =  HttpRequest.newBuilder()
-					.uri(new URI(GITHUB_API))
+					.uri(URI.create(GITHUB_API))
 					.GET()
 					.build();
 
@@ -39,10 +42,6 @@ public class GitHubRequest {
 			
 			return response.statusCode();
 			
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return 0;
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -51,6 +50,44 @@ public class GitHubRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 			return 2;
+		}
+				
+	}
+	
+	public RepositoriesGitHub doSearchRepository(String query) throws GitHubRequestLimitExceededException {
+		
+		HttpClient client = HttpClient.newHttpClient();
+		
+		try {
+			
+			HttpRequest request = HttpRequest.newBuilder()
+						.uri(new URI(GITHUB_API + "search/repositories" + query))
+						.GET()
+						.build();
+
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			
+			if(response.statusCode() == 403) {
+				throw new GitHubRequestLimitExceededException();
+			} else {
+				
+				RepositoriesGitHub repositories = Parser.parseRepositories(response);
+				return repositories;
+				
+			}
+		
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
 		}
 				
 	}

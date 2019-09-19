@@ -5,11 +5,7 @@ import org.tacs.grupocuatro.controller.AuthenticationController;
 import org.tacs.grupocuatro.controller.GitHubController;
 import org.tacs.grupocuatro.controller.RepositoryController;
 import org.tacs.grupocuatro.controller.UserController;
-
-import org.tacs.grupocuatro.github.*;
-import org.tacs.grupocuatro.github.enums.*;
-import org.tacs.grupocuatro.github.query.*;
-import org.tacs.grupocuatro.github.query.decorators.*;
+import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -21,22 +17,8 @@ public class Server {
     public static int OURPORT  = 8080;
     public static String TEST_STRING =  "Hello, Javelin.";
     
-    public static void main(String[] args) throws GitHubConnectionException {
+    public static void main(String[] args) {
         
-    	/*
-    	GitHubConnect conn = GitHubConnect.getInstance();
-    	conn.tryConnection();
-    	
-    	GitHubQueryBuilder gb = new GitHubQueryBuilder()
-    			.setSort(Sort.STARS)
-    			.setOrder(Order.ASC)
-    			.putDecorator(new Comparison(ValueType.STARS, Comparator.GREATER, 5))
-    			.putDecorator(new Operation(Operator.AND))
-    			.putDecorator(new Between(ValueType.FORKS,10,20));
-    	
-    	System.out.println(gb.build());
-    	*/
-    	
     	Javalin app = Javalin.create().start(OURPORT);
         app.config.accessManager(AuthenticationController::handleAuth);
 

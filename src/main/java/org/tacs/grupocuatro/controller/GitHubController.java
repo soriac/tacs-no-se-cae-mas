@@ -4,7 +4,7 @@ import io.javalin.http.Context;
 
 import org.tacs.grupocuatro.JsonResponse;
 import org.tacs.grupocuatro.github.GitHubConnect;
-import org.tacs.grupocuatro.github.GitHubConnectionException;
+import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 public class GitHubController {
     

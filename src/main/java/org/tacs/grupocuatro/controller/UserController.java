@@ -3,7 +3,6 @@ package org.tacs.grupocuatro.controller;
 import io.javalin.http.Context;
 import org.tacs.grupocuatro.JsonResponse;
 
-import java.io.Console;
 import java.util.ArrayList;
 import java.util.HashMap;
 
