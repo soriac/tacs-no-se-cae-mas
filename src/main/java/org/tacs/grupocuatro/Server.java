@@ -33,6 +33,15 @@ public class Server {
             post("/logout", AuthenticationController::logout);
 
             path("/users", () -> {
+                path("/me", () -> {
+                    before(ctx -> ctx.attribute("id", ctx.cookieStore("userId")));
+
+                    get(UserController::me, roles(USER));
+                    get("/favorites", UserController::viewFavoriteRepos, roles(USER));
+                    post("/favorites", UserController::addFavoriteRepo, roles(USER));
+                    delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
+                });
+
                 get(UserController::all, roles(ADMIN));
                 get("/compare", UserController::compareFavorites, roles(ADMIN));
                 get("/:id", UserController::one, roles(ADMIN));
@@ -42,15 +51,6 @@ public class Server {
                 get(RepositoryController::all, roles(USER, ADMIN));
                 get("/count", RepositoryController::count, roles(ADMIN));
                 get("/:id", RepositoryController::one, roles(USER, ADMIN));
-            });
-
-            path("/me", () -> {
-                before(ctx -> ctx.attribute("id", ctx.cookieStore("userId")));
-
-                get(UserController::me, roles(USER));
-                get("/favorites", UserController::viewFavoriteRepos, roles(USER));
-                post("/favorites", UserController::addFavoriteRepo, roles(USER));
-                delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
             });
         });
         

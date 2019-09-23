@@ -15,6 +15,7 @@ public class AuthenticationController {
     public static void signup(Context ctx) {
         // parsamos el cuerpo como una clase, javalin valida
         var user = ctx.bodyAsClass(AuthenticationPayload.class);
+        ctx.status(201);
         ctx.json(new JsonResponse("Signed up!").with(user));
     }
 
