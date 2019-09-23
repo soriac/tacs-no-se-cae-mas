@@ -1,19 +1,24 @@
 package org.tacs.grupocuatro.controller;
 
 import io.javalin.http.Context;
-import org.tacs.grupocuatro.GitHubRequestLimitExceededException;
-import org.tacs.grupocuatro.JsonResponse;
 
-import java.util.Random;
+import org.tacs.grupocuatro.JsonResponse;
+import org.tacs.grupocuatro.github.GitHubConnect;
+import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 public class GitHubController {
-    public static void authenticate(Context ctx) {
-        // hacer alguna magia para autenticarse en github si no estamos autenticados
-        // probablemente sea un singleton, ya que si eventualmente tenemos muchas
-        // instancias, vamos a tener que autenticar en todas las instancias anyways
+    
+	public static void authenticate(Context ctx) throws GitHubConnectionException{	
+    	GitHubConnect conn = GitHubConnect.getInstance();
+    	conn.tryConnection();
     }
 
+	/*
     public static void checkRemainingRequests(Context ctx) throws GitHubRequestLimitExceededException {
+    	
+    	GitHubConnect conn = GitHubConnect.getInstance();
+    	conn.check();
+    	
         var random = new Random();
         var randomness = random.nextInt(100); // genera un número entre 0 y 99
         System.out.println(randomness);
@@ -27,4 +32,11 @@ public class GitHubController {
         ctx.status(500);
         ctx.json(new JsonResponse("", "GitHub Request Limit Exceeded"));
     }
+    */
+	
+    public static void handleConnectionException(GitHubConnectionException t, Context ctx) {
+        ctx.status(500);
+        ctx.json(new JsonResponse("", "Error ocurred while connecting to GitHub API"));
+    }
+    
 }

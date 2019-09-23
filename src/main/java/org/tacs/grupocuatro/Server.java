@@ -5,6 +5,7 @@ import org.tacs.grupocuatro.controller.AuthenticationController;
 import org.tacs.grupocuatro.controller.GitHubController;
 import org.tacs.grupocuatro.controller.RepositoryController;
 import org.tacs.grupocuatro.controller.UserController;
+import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -17,15 +18,15 @@ public class Server {
     public static String TEST_STRING =  "Hello, Javelin.";
     
     public static void main(String[] args) {
-        Javalin app = Javalin.create().start(OURPORT);
+        
+    	Javalin app = Javalin.create().start(OURPORT);
         app.config.accessManager(AuthenticationController::handleAuth);
 
-        app.exception(GitHubRequestLimitExceededException.class, GitHubController::handleRequestLimitExceeded);
-
+        app.exception(GitHubConnectionException.class, GitHubController::handleConnectionException);
+        
         app.get("/", ctx -> ctx.json(new JsonResponse(TEST_STRING)));
         app.routes(() -> {
             before(GitHubController::authenticate);
-            before(GitHubController::checkRemainingRequests);
 
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
@@ -52,6 +53,8 @@ public class Server {
                 delete("/favorites", UserController::removeFavoriteRepo, roles(USER));
             });
         });
+        
+    	
     }
 
 }

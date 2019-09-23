@@ -1,4 +1,5 @@
-package org.tacs.grupocuatro;
+package org.tacs.grupocuatro.github.exceptions;
 
 public class GitHubRequestLimitExceededException extends Exception {
+	
 }
