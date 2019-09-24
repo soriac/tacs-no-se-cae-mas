@@ -22,7 +22,12 @@ public class RepositoryDAO implements DAO<Repository> {
 
     @Override
     public Optional<Repository> get(String id) {
-        return repositories.stream().filter(u -> u.getId().equals(id)).findFirst();
+        var repo = repositories.stream().filter(u -> u.getId().equals(id)).findFirst();
+        if (repo.isEmpty()) {
+            // pedirlo al api de GH
+        }
+
+        return repo;
     }
 
     @Override

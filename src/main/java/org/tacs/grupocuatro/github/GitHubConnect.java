@@ -28,60 +28,57 @@ public class GitHubConnect {
 	una lista de los repositorios con los filtros pedidos 
 	
 	*/
-	
-	private static GitHubConnect instance = null;
-	private String token = null;
-	
-	private GitHubConnect() {
 
-		String token = System.getenv("GITHUB_TACS");
-		
-		if (token == null) {
-			System.out.println("WARNING - No esta definida la variable de ambiente GITHUB_TACS. Se procede a usar GitHub sin autorizacion");
-		}
-		
-		this.token = token;
-	
-	}
-	
-	public static GitHubConnect getInstance() {
-		if(instance == null) {
-			instance = new GitHubConnect();
-		}
-		return instance;
-	}
-	
-	public void tryConnection() throws GitHubConnectionException {
-				
-		GitHubRequest request = new GitHubRequest(this.token);
-		int code = request.doTest();
-		
-		if(code != 200) {
-			throw new GitHubConnectionException();
-		}
-		
-	}
-	
-	public RepositoriesGitHub searchRepository(Order order, Sort sort, List<GitHubQueryDecorator> decorators) throws GitHubRequestLimitExceededException {
-		
-		GitHubRequest request = new GitHubRequest(this.token);
-		GitHubQueryBuilder query = new GitHubQueryBuilder();
-		
-		if (order != null) {
-			query.setOrder(order);
-		}
-		
-		if(sort != null) {
-			query.setSort(sort);
-		}
-		
-		decorators.forEach(x -> query.putDecorator(x));
-		
-		return request.doSearchRepository(query.build());
-		
-	}
-	
-	
+    private static GitHubConnect instance = null;
+    private String token = null;
+
+    private GitHubConnect() {
+
+        String token = System.getenv("GITHUB_TACS");
+
+        if (token == null) {
+            System.out.println("WARNING - No esta definida la variable de ambiente GITHUB_TACS. Se procede a usar GitHub sin autorizacion");
+        }
+
+        this.token = token;
+
+    }
+
+    public static GitHubConnect getInstance() {
+        if (instance == null) {
+            instance = new GitHubConnect();
+        }
+        return instance;
+    }
+
+    public void tryConnection() throws GitHubConnectionException {
+        GitHubRequest request = new GitHubRequest(this.token);
+        int code = request.doTest();
+
+        if (code != 200) {
+            throw new GitHubConnectionException();
+        }
+
+    }
+
+    public RepositoriesGitHub searchRepository(Order order, Sort sort, List<GitHubQueryDecorator> decorators) throws GitHubRequestLimitExceededException {
+
+        GitHubRequest request = new GitHubRequest(this.token);
+        GitHubQueryBuilder query = new GitHubQueryBuilder();
+
+        if (order != null) {
+            query.setOrder(order);
+        }
+
+        if (sort != null) {
+            query.setSort(sort);
+        }
+
+        decorators.forEach(query::putDecorator);
+
+        return request.doSearchRepository(query.build());
+    }
+
 	/*
 	public checkLimit() {
 		
@@ -90,6 +87,4 @@ public class GitHubConnect {
 		
 	}
 	*/
-	
-	
 }
