@@ -2,19 +2,19 @@ package org.tacs.grupocuatro.entity;
 
 public class Repository {
 	
-	private long id;
+	private String id;
 	private String name;
 	
-	public Repository(long id, String name) {
+	public Repository(String id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 
-	public long getId() {
+	public String getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 

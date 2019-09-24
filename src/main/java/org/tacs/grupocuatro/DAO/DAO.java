@@ -3,9 +3,9 @@ package org.tacs.grupocuatro.DAO;
 import java.util.List;
 import java.util.Optional;
 
-public interface Dao<T> {
+public interface DAO<T> {
 
-    Optional<T> get(long id);
+    Optional<T> get(String id);
 
     List<T> getAll();
 
