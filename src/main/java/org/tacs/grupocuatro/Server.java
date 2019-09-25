@@ -20,7 +20,7 @@ public class Server {
     public static int OURPORT  = 8080;
     public static String TEST_STRING =  "Hello, Javelin.";
     
-    public static void main(String[] args) {
+    public static void main(String[] args){
         crearAdministrador();
 
     	Javalin app = Javalin.create().start(OURPORT);
@@ -65,4 +65,5 @@ public class Server {
         admin.setId("1");
         UserDAO.getInstance().save(admin);
     }
+    
 }

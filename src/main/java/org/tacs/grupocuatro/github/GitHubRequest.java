@@ -11,6 +11,8 @@ import java.util.Map;
 
 import org.json.JSONObject;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
+import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
+import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
 import org.tacs.grupocuatro.github.Parser;
 
@@ -90,6 +92,49 @@ public class GitHubRequest {
 			return null;
 		}
 				
+	}
+	
+	public RepositoryGitHub doRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException{
+		
+		HttpClient client = HttpClient.newHttpClient();
+		
+		try {
+			HttpRequest request =  HttpRequest.newBuilder()
+					.uri(new URI(GITHUB_API + "repositories" + "/" + Long.toString(id)))
+					.GET()
+					.build();
+			
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			
+			if(response.statusCode() == 403) {
+				throw new GitHubRequestLimitExceededException();
+			} else if (response.statusCode() == 404) {
+				throw new GitHubRepositoryNotFoundException();
+		 	} else {
+		 		
+				String resp = response.body().toString();
+				JSONObject respJson = new JSONObject(resp);
+		 		
+		 		RepositoryGitHub repo = Parser.parseRepository(respJson);
+				return repo;
+	
+			}
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return null;
+		}
+		
+		
 	}
 	
 	public Map<String, Integer> getLimits(Type aType) throws IOException, InterruptedException, URISyntaxException {

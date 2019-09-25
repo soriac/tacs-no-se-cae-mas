@@ -27,14 +27,7 @@ public class Parser {
 			
 			JSONObject repoJson = jsonArray.getJSONObject(n);
 			
-			RepositoryGitHub repo = new RepositoryGitHub(
-					repoJson.optLong("id", 0),
-					repoJson.optString("full_name", null),
-					repoJson.optInt("forks_count", 0),
-					repoJson.optInt("stargazers_count", 0),
-					repoJson.optString("language", null));
-			
-			repos.add(repo);
+			repos.add(Parser.parseRepository(repoJson));
 			
 		}
 		
@@ -63,6 +56,19 @@ public class Parser {
 		}
 
 		return reposGitHub;
+		
+	}
+	
+	public static RepositoryGitHub parseRepository(JSONObject json) {
+		
+		RepositoryGitHub repo = new RepositoryGitHub(
+				json.optLong("id", 0),
+				json.optString("full_name", null),
+				json.optInt("forks_count", 0),
+				json.optInt("stargazers_count", 0),
+				json.optString("language", null));
+		
+		return repo;
 		
 	}
 	
