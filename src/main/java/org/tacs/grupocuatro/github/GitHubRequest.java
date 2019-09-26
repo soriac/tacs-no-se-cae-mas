@@ -33,7 +33,7 @@ public class GitHubRequest {
 		HttpClient client = HttpClient.newHttpClient();
 		
 		try {
-			
+
 			HttpRequest request =  HttpRequest.newBuilder()
 					.uri(URI.create(GITHUB_API))
 					.header("Authorization", "token " + token)
@@ -64,7 +64,7 @@ public class GitHubRequest {
 			
 			HttpRequest request = HttpRequest.newBuilder()
 						.uri(new URI(GITHUB_API + "search/repositories" + query))
-					.header("Authorization", "token" + token)
+					.header("Authorization", "token " + token)
 						.GET()
 						.build();
 
@@ -102,7 +102,7 @@ public class GitHubRequest {
 		try {
 			HttpRequest request =  HttpRequest.newBuilder()
 					.uri(new URI(GITHUB_API + "repositories" + "/" + id))
-					.header("Authorization", "token" + token)
+					.header("Authorization", "token " + token)
 					.GET()
 					.build();
 			
@@ -145,7 +145,7 @@ public class GitHubRequest {
 			
 		HttpRequest request =  HttpRequest.newBuilder()
 				.uri(new URI(GITHUB_API + "rate_limit"))
-				.header("Authorization", "token" + token)
+				.header("Authorization", "token " + token)
 				.GET()
 				.build();
 

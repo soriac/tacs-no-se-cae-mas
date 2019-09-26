@@ -1,8 +1,9 @@
 import {Role} from '../../state/auth/types';
 import Login from '../../screens/Login';
-import AdminDashboard from '../../screens/Admin';
+import AdminDashboard from '../../screens/Admin/AdminDashboard';
 import Layout from '../../components/Layout';
 import UserDashboard from '../../screens/User';
+import RepoSearch from '../../screens/Admin/RepoSearch';
 
 // isScreen is true when a route should show up in navigation bars
 type Route = {
@@ -57,6 +58,13 @@ const routes: Category[] = [
                 isScreen: true,
                 icon: 'none',
                 Screen: AdminDashboard
+            },
+            {
+                name: 'Repository Search',
+                path: '/repos',
+                isScreen: true,
+                icon: 'none',
+                Screen: RepoSearch
             },
         ]
     }
