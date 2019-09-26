@@ -12,7 +12,8 @@ import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
-import static org.tacs.grupocuatro.entity.ApplicationRole.*;
+import static org.tacs.grupocuatro.entity.ApplicationRole.ADMIN;
+import static org.tacs.grupocuatro.entity.ApplicationRole.USER;
 
 public class Server {
     // poner en otro lado?
@@ -23,7 +24,10 @@ public class Server {
     public static void main(String[] args){
         crearAdministrador();
 
-    	Javalin app = Javalin.create().start(OURPORT);
+        Javalin app = Javalin.create(javalinConfig -> {
+            javalinConfig.enableCorsForAllOrigins();
+        }).start(OURPORT);
+
         app.config.accessManager(AuthenticationController::handleAuth);
 
         app.exception(GitHubConnectionException.class, GitHubController::handleConnectionException);
@@ -59,7 +63,7 @@ public class Server {
 
     private static void crearAdministrador() {
         var admin = new User();
-        admin.setUsername("admin");
+        admin.setEmail("admin");
         admin.setPassword(BCrypt.withDefaults().hashToString(12, "1234".toCharArray()));
         admin.setRole(ADMIN);
         admin.setId("1");

@@ -36,11 +36,12 @@ public class GitHubRequest {
 			
 			HttpRequest request =  HttpRequest.newBuilder()
 					.uri(URI.create(GITHUB_API))
+					.header("Authorization", "token " + token)
 					.GET()
 					.build();
 
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			
+
 			return response.statusCode();
 			
 		} catch (IOException e) {
@@ -63,6 +64,7 @@ public class GitHubRequest {
 			
 			HttpRequest request = HttpRequest.newBuilder()
 						.uri(new URI(GITHUB_API + "search/repositories" + query))
+					.header("Authorization", "token" + token)
 						.GET()
 						.build();
 
@@ -100,6 +102,7 @@ public class GitHubRequest {
 		try {
 			HttpRequest request =  HttpRequest.newBuilder()
 					.uri(new URI(GITHUB_API + "repositories" + "/" + id))
+					.header("Authorization", "token" + token)
 					.GET()
 					.build();
 			
@@ -142,6 +145,7 @@ public class GitHubRequest {
 			
 		HttpRequest request =  HttpRequest.newBuilder()
 				.uri(new URI(GITHUB_API + "rate_limit"))
+				.header("Authorization", "token" + token)
 				.GET()
 				.build();
 

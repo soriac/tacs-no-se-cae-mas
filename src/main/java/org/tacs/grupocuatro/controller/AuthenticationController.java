@@ -27,7 +27,7 @@ public class AuthenticationController {
         var user = new User();
         var hashedPassword = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
 
-        user.setUsername(data.getUsername());
+        user.setEmail(data.getEmail());
         user.setPassword(hashedPassword);
         user.setRole(ApplicationRole.USER);
         UserDAO.getInstance().save(user);
@@ -38,7 +38,7 @@ public class AuthenticationController {
 
     public static void login(Context ctx) {
         var data = ctx.bodyAsClass(AuthenticationPayload.class);
-        var user = UserDAO.getInstance().findByUser(data.getUsername());
+        var user = UserDAO.getInstance().findByUser(data.getEmail());
 
         // no existe el usuario
         if (user.isEmpty()) {
@@ -74,17 +74,23 @@ public class AuthenticationController {
 
     public static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
         var tokenCookie = ctx.cookieStore("token");
-        if (tokenCookie == null) {
+        var tokenHeader = ctx.header("Authorization");
+
+        String token = null;
+        if (tokenCookie != null) {
+            token = tokenCookie.toString();
+        } else if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
+            token = tokenHeader.replace("Bearer ", "");
+        } else {
             handler.handle(ctx);
             return;
-        };
-
-
-        var token = tokenCookie.toString();
+        }
 
         try {
             var result = verifier.verify(token);
             var id = result.getClaim("id").asString();
+            // mejor que lea el role desde el claim del jwt,
+            // pasa que hay que hacer una funcion que haga string -> applicationrole
             var role = getUserRole(id);
 
             if (permittedRoles.contains(role) || permittedRoles.isEmpty()) {
@@ -102,23 +108,24 @@ public class AuthenticationController {
 }
 
 class AuthenticationPayload {
-    private String username;
+    private String email;
     private String password;
 
-    String getUsername() {
-        return username;
+    String getEmail() {
+        return email;
     }
     String getPassword() {
         return password;
     }
-    public void setUsername(String username) {
-        this.username = username;
+
+    public void setEmail(String email) {
+        this.email = email;
     }
     public void setPassword(String password) {
         this.password = password;
     }
     public String toString() {
-        return "Username: " + username + ", Password: " + password;
+        return "Username: " + email + ", Password: " + password;
     }
 }
 
