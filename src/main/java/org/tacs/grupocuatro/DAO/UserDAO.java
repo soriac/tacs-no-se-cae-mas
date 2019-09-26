@@ -3,6 +3,7 @@ package org.tacs.grupocuatro.DAO;
 import org.tacs.grupocuatro.entity.User;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +34,11 @@ public class UserDAO implements DAO<User> {
 
     @Override
     public void save(User user) {
+        // esto se resuelve solo cuando tengamos hibernate
+        if (user.getFavRepos() == null) {
+            user.setFavRepos(new HashSet<>());
+        }
+
         user.setId("" + id);
         id++;
         users.add(user);

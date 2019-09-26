@@ -4,16 +4,16 @@ import io.javalin.http.Context;
 import org.tacs.grupocuatro.DAO.RepositoryDAO;
 import org.tacs.grupocuatro.JsonResponse;
 import org.tacs.grupocuatro.github.GitHubConnect;
-import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
+import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.enums.*;
+import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
-import org.tacs.grupocuatro.github.query.*;
-import org.tacs.grupocuatro.github.query.decorators.*;
+import org.tacs.grupocuatro.github.query.GitHubQueryDecorator;
+import org.tacs.grupocuatro.github.query.decorators.Comparison;
+import org.tacs.grupocuatro.github.query.decorators.Operation;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-
 
 public class RepositoryController {
     private static GitHubQueryDecorator stringToDecorator(ValueType type, String string) {
@@ -88,8 +88,22 @@ public class RepositoryController {
 		}
 
 		try {
-			var repos = GitHubConnect.getInstance().searchRepository(Order.ASC, Sort.STARS, decorators);
-			ctx.status(200).json(new JsonResponse("").with(repos.getRepos()));
+			var repos = GitHubConnect.getInstance().searchRepository(Order.ASC, Sort.STARS, decorators).getRepos();
+
+			// yo se que el attribute no es null, pero java no es tan inteligente :)
+			if ("ADMIN".equals(ctx.attribute("role").toString())) {
+				var reposWithFavorites = repos.stream()
+						.map(repo ->
+								new RepositoryGitHubWithFavCount(
+										repo,
+										RepositoryDAO.getInstance().favCountForId(repo.getId() + "")
+								))
+						.toArray();
+
+				ctx.status(200).json(new JsonResponse("").with(reposWithFavorites));
+			} else {
+				ctx.status(200).json(new JsonResponse("").with(repos));
+			}
 		} catch (GitHubRequestLimitExceededException ex) {
 		    ctx.status(500).json(new JsonResponse("", "Ran out of GitHub requests."));
 		}
@@ -97,19 +111,56 @@ public class RepositoryController {
     }
 
     public static void one(Context ctx) {
-    }
+		var id = ctx.pathParam("id");
+		try {
+			var ghRepo = GitHubConnect.getInstance().findRepositoryById(id);
+			if ("ADMIN".equals(ctx.attribute("role").toString())) {
+				var repoWithFavorites = new RepositoryGitHubWithFavCount(
+						ghRepo,
+						RepositoryDAO.getInstance().favCountForId(ghRepo.getId() + "")
+				);
 
-    public static void count(Context ctx) {
+				ctx.status(200).json(new JsonResponse("").with(repoWithFavorites));
+			} else {
+				ctx.status(200).json(new JsonResponse("").with(ghRepo));
+			}
+		} catch (GitHubRepositoryNotFoundException e) {
+			ctx.status(404).json(new JsonResponse("Invalid Request", "Repository not found"));
+		} catch (GitHubRequestLimitExceededException e) {
+			ctx.status(500).json(new JsonResponse("Invalid Request", "Github Request Limit Exceeded"));
+			e.printStackTrace();
+		}
+	}
+
+	public static void count(Context ctx) {
 		String since = ctx.queryParam("since");
 		if (since == null) since = "0";
 
-		final var startingDate = new Date(since);
+		final var startingDate = new Date(Long.parseLong(since));
 
 		var repos = RepositoryDAO.getInstance()
 				.getAll().stream()
-				.filter(repo -> repo.getAdded().after(startingDate));
+				.filter(repo -> repo.getAdded().after(startingDate))
+				.count();
 
 		ctx.status(200).json(new JsonResponse("").with(repos));
 
     }
+}
+
+class RepositoryGitHubWithFavCount extends RepositoryGitHub {
+	private long favCount;
+
+	public RepositoryGitHubWithFavCount(RepositoryGitHub old, long favCount) {
+		super(old.getId(), old.getName(), old.getNumForks(), old.getNumStars(), old.getLanguage());
+		this.setFavCount(favCount);
+	}
+
+	public long getFavCount() {
+		return favCount;
+	}
+
+	public void setFavCount(long favCount) {
+		this.favCount = favCount;
+	}
 }

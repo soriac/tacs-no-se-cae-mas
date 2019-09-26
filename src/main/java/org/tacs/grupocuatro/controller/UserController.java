@@ -4,6 +4,8 @@ import io.javalin.http.Context;
 import org.tacs.grupocuatro.DAO.RepositoryDAO;
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.JsonResponse;
+import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
+import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
 
 public class UserController {
     private static UserDAO dao = UserDAO.getInstance();
@@ -20,7 +22,7 @@ public class UserController {
         if (user.isEmpty()) {
             ctx.status(404).json(new JsonResponse("Invalid Request", "User not found"));
         } else {
-            ctx.status(200).json(new JsonResponse("").with(user));
+            ctx.status(200).json(new JsonResponse("").with(user.get()));
         }
     }
 
@@ -71,33 +73,45 @@ public class UserController {
         var id = ctx.attribute("id");
         var repoId = ctx.pathParam("repo");
 
-        var user = dao.get(id.toString());
-        var repo = RepositoryDAO.getInstance().get(repoId);
+        try {
+            var user = dao.get(id.toString());
+            var repo = RepositoryDAO.getInstance().getOrAdd(repoId);
 
-        if (user.isEmpty()) {
-            ctx.status(404).json(new JsonResponse("Invalid Request", "User not found"));
-        } else if (repo.isEmpty()) {
+            if (user.isEmpty()) {
+                ctx.status(404).json(new JsonResponse("Invalid Request", "User not found"));
+            } else {
+                user.get().getFavRepos().add(repo);
+                ctx.status(200).json(new JsonResponse("Repository added to favorites").with(user.get().getFavRepos()));
+            }
+        } catch (GitHubRepositoryNotFoundException e) {
             ctx.status(404).json(new JsonResponse("Invalid Request", "Repository not found"));
-        } else {
-            user.get().addFavoriteRepo(repo.get());
-            ctx.status(200).json(new JsonResponse("Repository added to favorites").with(user.get().getFavRepos()));
+        } catch (GitHubRequestLimitExceededException e) {
+            ctx.status(500).json(new JsonResponse("Invalid Request", "Github Request Limit Exceeded"));
+            e.printStackTrace();
         }
     }
 
+    // es exactamente igual a add, pero llama a remove... quizas haya una abstracción acá
+    // pasa que molestan mucho los optional y las excpeciones
     public static void removeFavoriteRepo(Context ctx) {
         var id = ctx.attribute("id");
         var repoId = ctx.pathParam("repo");
 
-        var user = dao.get(id.toString());
-        var repo = RepositoryDAO.getInstance().get(repoId);
+        try {
+            var user = dao.get(id.toString());
+            var repo = RepositoryDAO.getInstance().getOrAdd(repoId);
 
-        if (user.isEmpty()) {
-            ctx.status(404).json(new JsonResponse("Invalid Request", "User not found"));
-        } else if (repo.isEmpty()) {
+            if (user.isEmpty()) {
+                ctx.status(404).json(new JsonResponse("Invalid Request", "User not found"));
+            } else {
+                user.get().getFavRepos().remove(repo);
+                ctx.status(200).json(new JsonResponse("Repository removed from favorites").with(user.get().getFavRepos()));
+            }
+        } catch (GitHubRepositoryNotFoundException e) {
             ctx.status(404).json(new JsonResponse("Invalid Request", "Repository not found"));
-        } else {
-            user.get().getFavRepos().remove(repo.get());
-            ctx.status(200).json(new JsonResponse("Repository removed from favorites").with(user.get().getFavRepos()));
+        } catch (GitHubRequestLimitExceededException e) {
+            ctx.status(500).json(new JsonResponse("Invalid Request", "Github Request Limit Exceeded"));
+            e.printStackTrace();
         }
     }
 }

@@ -1,7 +1,5 @@
 package org.tacs.grupocuatro.github;
 
-import java.util.List;
-
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.enums.Order;
@@ -11,6 +9,8 @@ import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
 import org.tacs.grupocuatro.github.query.GitHubQueryBuilder;
 import org.tacs.grupocuatro.github.query.GitHubQueryDecorator;
+
+import java.util.List;
 
 public class GitHubConnect {
 	
@@ -89,12 +89,10 @@ public class GitHubConnect {
    	RepositoryGitHub repo2 = conn.findRepositoryById(20633049);
     	
     */
-    
-    public RepositoryGitHub findRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
-    	
+
+    public RepositoryGitHub findRepositoryById(String id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
         GitHubRequest request = new GitHubRequest(this.token);
         return request.doRepositoryById(id);
-    	
     }
     
 	/*

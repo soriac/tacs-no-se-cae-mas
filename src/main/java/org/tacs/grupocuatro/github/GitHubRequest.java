@@ -1,5 +1,11 @@
 package org.tacs.grupocuatro.github;
 
+import org.json.JSONObject;
+import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
+import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
+import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
+import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -8,13 +14,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.JSONObject;
-import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
-import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
-import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
-import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
-import org.tacs.grupocuatro.github.Parser;
 
 
 public class GitHubRequest {
@@ -93,14 +92,14 @@ public class GitHubRequest {
 		}
 				
 	}
-	
-	public RepositoryGitHub doRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException{
+
+	public RepositoryGitHub doRepositoryById(String id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
 		
 		HttpClient client = HttpClient.newHttpClient();
 		
 		try {
 			HttpRequest request =  HttpRequest.newBuilder()
-					.uri(new URI(GITHUB_API + "repositories" + "/" + Long.toString(id)))
+					.uri(new URI(GITHUB_API + "repositories" + "/" + id))
 					.GET()
 					.build();
 			
@@ -111,8 +110,8 @@ public class GitHubRequest {
 			} else if (response.statusCode() == 404) {
 				throw new GitHubRepositoryNotFoundException();
 		 	} else {
-		 		
-				String resp = response.body().toString();
+
+				String resp = response.body();
 				JSONObject respJson = new JSONObject(resp);
 		 		
 		 		RepositoryGitHub repo = Parser.parseRepository(respJson);
