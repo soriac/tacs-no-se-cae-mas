@@ -4,7 +4,6 @@ import io.javalin.http.Context;
 import org.tacs.grupocuatro.DAO.RepositoryDAO;
 import org.tacs.grupocuatro.JsonResponse;
 import org.tacs.grupocuatro.github.GitHubConnect;
-import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.enums.*;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
@@ -148,19 +147,3 @@ public class RepositoryController {
     }
 }
 
-class RepositoryGitHubWithFavCount extends RepositoryGitHub {
-	private long favCount;
-
-	public RepositoryGitHubWithFavCount(RepositoryGitHub old, long favCount) {
-		super(old.getId(), old.getName(), old.getNumForks(), old.getNumStars(), old.getLanguage());
-		this.setFavCount(favCount);
-	}
-
-	public long getFavCount() {
-		return favCount;
-	}
-
-	public void setFavCount(long favCount) {
-		this.favCount = favCount;
-	}
-}

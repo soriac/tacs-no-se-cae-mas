@@ -2,11 +2,9 @@ package org.tacs.grupocuatro;
 
 import at.favre.lib.crypto.bcrypt.BCrypt;
 import io.javalin.Javalin;
+import io.javalin.core.JavalinConfig;
 import org.tacs.grupocuatro.DAO.UserDAO;
-import org.tacs.grupocuatro.controller.AuthenticationController;
-import org.tacs.grupocuatro.controller.GitHubController;
-import org.tacs.grupocuatro.controller.RepositoryController;
-import org.tacs.grupocuatro.controller.UserController;
+import org.tacs.grupocuatro.controller.*;
 import org.tacs.grupocuatro.entity.User;
 import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
@@ -16,23 +14,18 @@ import static org.tacs.grupocuatro.entity.ApplicationRole.ADMIN;
 import static org.tacs.grupocuatro.entity.ApplicationRole.USER;
 
 public class Server {
-    // poner en otro lado?
-    public static boolean DEBUG = true;
-    public static int OURPORT  = 8080;
-    public static String TEST_STRING =  "Hello, Javelin.";
-    
+    public static int port = 8080;
+
     public static void main(String[] args){
         crearAdministrador();
 
-        Javalin app = Javalin.create(javalinConfig -> {
-            javalinConfig.enableCorsForAllOrigins();
-        }).start(OURPORT);
+        Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(port);
 
         app.config.accessManager(AuthenticationController::handleAuth);
 
         app.exception(GitHubConnectionException.class, GitHubController::handleConnectionException);
+        app.exception(AuthenticationException.class, (e, ctx) -> ctx.status(401).json(new JsonResponse("Unauthorized.")));
         
-        app.get("/", ctx -> ctx.json(new JsonResponse(TEST_STRING)));
         app.routes(() -> {
             before(GitHubController::authenticate);
 
