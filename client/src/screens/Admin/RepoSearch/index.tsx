@@ -1,21 +1,24 @@
 import React, {useState} from 'react';
-import {Filter, Repo, searchRepos} from '../../../api';
+import {searchRepos} from '../../../api';
 import {AppToaster} from '../../../util/toaster';
-import Layout from './layout';
+import Layout from './Layout';
+import {Filter, Repo, SearchReposPayload} from '../../../api/types';
 
+export type ToggleableFilter = Filter & { enabled: boolean }
 const RepoSearch = () => {
     const [repos, setRepos] = useState<Repo[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<any>(null);
 
-    const doSearch = async (filters: Filter[]) => {
+    const handleSearch = async (filters: ToggleableFilter[]) => {
         setLoading(true);
 
-        const result = await searchRepos(filters);
+        const enabledFilters = filters.filter(filter => filter.enabled);
+        const result = await searchRepos(enabledFilters);
 
         setLoading(false);
 
-        const {data, error} = await result.json();
+        const {data, error}: SearchReposPayload = await result.json();
         if (result.status !== 200) {
             AppToaster.show({message: 'Internal server error. Please try again.', intent: 'warning'});
             setError(error);
@@ -24,7 +27,7 @@ const RepoSearch = () => {
         }
     };
 
-    return <Layout error={error} loading={loading} repos={repos} doSearch={doSearch}/>;
+    return <Layout error={error} loading={loading} repos={repos} handleSearch={handleSearch}/>;
 };
 
 export default RepoSearch;

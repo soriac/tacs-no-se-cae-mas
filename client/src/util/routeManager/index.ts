@@ -1,9 +1,11 @@
-import {Role} from '../../state/auth/types';
 import Login from '../../screens/Login';
 import AdminDashboard from '../../screens/Admin/AdminDashboard';
 import Layout from '../../components/Layout';
 import UserDashboard from '../../screens/User';
 import RepoSearch from '../../screens/Admin/RepoSearch';
+import Users from '../../screens/Admin/Users';
+import {Role} from '../../api/types';
+import Signup from '../../screens/Signup';
 
 // isScreen is true when a route should show up in navigation bars
 type Route = {
@@ -33,6 +35,13 @@ const routes: Category[] = [
                 icon: 'none',
                 Screen: Login
             },
+            {
+                name: 'Signup',
+                path: '/signup',
+                isScreen: false,
+                icon: 'none',
+                Screen: Signup
+            },
         ]
     },
     {
@@ -40,10 +49,10 @@ const routes: Category[] = [
         layout: Layout,
         routes: [
             {
-                name: 'Dashboard',
+                name: 'Home',
                 path: '/',
                 isScreen: true,
-                icon: 'none',
+                icon: 'home',
                 Screen: UserDashboard
             }
         ]
@@ -53,18 +62,25 @@ const routes: Category[] = [
         layout: Layout,
         routes: [
             {
-                name: 'Dashboard',
+                name: 'Home',
                 path: '/',
                 isScreen: true,
-                icon: 'none',
+                icon: 'home',
                 Screen: AdminDashboard
             },
             {
                 name: 'Repository Search',
                 path: '/repos',
                 isScreen: true,
-                icon: 'none',
+                icon: 'search',
                 Screen: RepoSearch
+            },
+            {
+                name: 'Users',
+                path: '/users',
+                isScreen: true,
+                icon: 'person',
+                Screen: Users
             },
         ]
     }

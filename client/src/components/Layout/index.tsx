@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import {Button, Drawer, Navbar} from '@blueprintjs/core';
 import {Alignment} from '@blueprintjs/core/lib/esm/common/alignment';
 import {getCategoryForRole} from '../../util/routeManager';
-import {Role} from '../../state/auth/types';
 import {useDispatch, useSelector} from 'react-redux';
 import {setDrawer} from '../../state/ui/actions';
 import {StoreState} from '../../state';
@@ -29,13 +28,13 @@ function getBestWidth() {
 type Props = {}
 const Layout: React.FC<Props> = ({children}) => {
     const open = useSelector((store: StoreState) => store.ui.drawerOpen);
+    const role = useSelector((store: StoreState) => store.auth.role);
     const dispatch = useDispatch();
 
     const [drawerWidth, setWidth] = useState(getBestWidth());
     useEffect(() => window.addEventListener('resize', () => setWidth(getBestWidth())), []);
 
-
-    const category = getCategoryForRole(Role.admin);
+    const category = getCategoryForRole(role);
     const items = category.routes
         .filter(route => route.isScreen)
         .map(route => ({

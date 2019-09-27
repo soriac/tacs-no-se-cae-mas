@@ -1,4 +1,5 @@
-import {AuthActionTypes, LOG_OUT, Role, SET_TOKEN, SET_USER} from './types';
+import {AuthActionTypes, LOG_OUT, SET_TOKEN, SET_USER} from './types';
+import {Role} from '../../api/types';
 
 export function setUser(email: string, role: Role): AuthActionTypes {
     return {

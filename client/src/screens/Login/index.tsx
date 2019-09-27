@@ -3,9 +3,10 @@ import {RouteComponentProps} from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 
 import Layout from './layout';
-import {login, me, mePayload} from '../../api';
+import {login, me} from '../../api';
 import {AppToaster} from '../../util/toaster';
 import {setToken, setUser} from '../../state/auth/actions';
+import {MePayload} from '../../api/types';
 
 type Props = RouteComponentProps;
 const Login = (props: Props) => {
@@ -16,7 +17,7 @@ const Login = (props: Props) => {
         const response = await me();
 
         if (response.status === 200) {
-            const {data}: mePayload = await response.json();
+            const {data}: MePayload = await response.json();
             dispatch(setUser(data.email, data.role));
             AppToaster.show({message: 'Successfully logged in!', intent: 'success'});
             props.history.push('/');

@@ -1,13 +1,9 @@
+import {Role} from '../../api/types';
+
 export interface UserState {
     token: (string | undefined);
     email: (string | undefined);
     role: Role;
-}
-
-export enum Role {
-    anon = 'ANONYMOUS',
-    user = 'USER',
-    admin = 'ADMIN'
 }
 
 export const SET_USER = 'AUTH/USER';

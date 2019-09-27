@@ -2,7 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import bg from './bg.jpg';
 import Form from './form';
-import {Link} from 'react-router-dom';
 
 const Root = styled.div`
     width: 100vw;
@@ -51,17 +50,16 @@ const Title = styled.h1`
 `;
 
 type Props = {
-    login: (email: string, password: string) => Promise<void>
+    signup: (email: string, password: string) => Promise<void>
 }
 
-const Layout: React.FC<Props> = ({login}) => {
+const Layout: React.FC<Props> = ({signup}) => {
     return (
         <Root>
             <Container>
-                <Title>Login</Title>
+                <Title>Sign up</Title>
                 <Content>
-                    <Form login={login}/>
-                    <small>Don't have an account? <Link to='/signup'>Sign up now!</Link></small>
+                    <Form signup={signup}/>
                 </Content>
             </Container>
         </Root>

@@ -1,4 +1,5 @@
-import {AuthActionTypes, LOG_OUT, Role, SET_TOKEN, SET_USER, UserState} from './types';
+import {AuthActionTypes, LOG_OUT, SET_TOKEN, SET_USER, UserState} from './types';
+import {Role} from '../../api/types';
 
 const initialState: UserState = {
     token: undefined,
