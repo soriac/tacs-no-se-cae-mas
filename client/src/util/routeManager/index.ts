@@ -1,9 +1,13 @@
 import Login from '../../screens/Login';
 import AdminDashboard from '../../screens/Admin/AdminDashboard';
 import Layout from '../../components/Layout';
-import UserDashboard from '../../screens/User';
+import UserDashboard from '../../screens/User/UserDashboard';
 import RepoSearch from '../../screens/Admin/RepoSearch';
+import UserRepoSearch from '../../screens/User/RepoSearch';
+import UserScreen from '../../screens/Admin/User';
+import MyRepos from '../../screens/User/MyRepos';
 import Users from '../../screens/Admin/Users';
+import Compare from '../../screens/Admin/Compare';
 import {Role} from '../../api/types';
 import Signup from '../../screens/Signup';
 
@@ -54,7 +58,22 @@ const routes: Category[] = [
                 isScreen: true,
                 icon: 'home',
                 Screen: UserDashboard
+            },
+            {
+                name: 'Repository search',
+                path: '/repos',
+                isScreen: true,
+                icon: 'search',
+                Screen: UserRepoSearch
+            },
+            {
+                name: 'My repos',
+                path: '/myRepos',
+                isScreen: true,
+                icon: 'list',
+                Screen: MyRepos
             }
+
         ]
     },
     {
@@ -82,6 +101,20 @@ const routes: Category[] = [
                 icon: 'person',
                 Screen: Users
             },
+            {
+                name: 'Compare',
+                path: '/compare',
+                isScreen: true,
+                icon: 'comparison',
+                Screen: Compare
+            },
+            {
+                name: 'User',
+                path: '/users/:id',
+                isScreen: false,
+                icon: 'person',
+                Screen: UserScreen
+            }
         ]
     }
 ];

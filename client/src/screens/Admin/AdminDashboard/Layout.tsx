@@ -1,9 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Card, Spinner} from '@blueprintjs/core';
+import {Card, Spinner, Button} from '@blueprintjs/core';
+import {DatePicker} from '@blueprintjs/datetime';
 import Repository from '../../../components/Repository';
-import FilterGroup from '../../../components/RepositorySearchFilter/FilterGroup';
-import {ToggleableFilter} from './index';
 import {Repo} from '../../../api/types';
 
 const Root = styled.div`
@@ -29,25 +28,26 @@ const Container = styled(Card)`
 `;
 
 type Props = {
-    repos: Repo[]
+    reposCount: number | undefined
     loading: boolean
-    error: any | undefined
-    handleSearch: (filter: ToggleableFilter[]) => Promise<void>
+    error?: any | undefined
+    handleSearch: (since: string) => Promise<void>
 }
-const Layout: React.FC<Props> = ({repos, loading, error, handleSearch}) => {
+const Layout: React.FC<Props> = ({reposCount, loading, error, handleSearch}) => {
 
     return (
         <Root>
             <Container>
-                <h2>Repository Search</h2>
-                <FilterGroup handleSearch={handleSearch}/>
+                <Container>
+                    <DatePicker/>
+                    <Button intent='primary' icon='search'>Search</Button>
+                </Container>
                 {
                     loading ?
                         <Spinner/>
-                        : repos ?
-                        repos.map(repo => <Repository repo={repo} favCount/>)
+                        : reposCount ? 
+                        <p>Repos in sistem since: <strong>reposCount</strong></p>
                         : null
-
                 }
             </Container>
         </Root>

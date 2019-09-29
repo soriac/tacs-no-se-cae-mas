@@ -19,19 +19,20 @@ const Container = styled(Card)`
 
 type Props = {
     repo: Repo
+    favCount?: boolean | undefined
     addToFavorites?: (id: string) => Promise<void>
     removeFromFavorites?: (id: string) => Promise<void>
 }
-const Repository: React.FC<Props> = ({repo, addToFavorites, removeFromFavorites}) => {
+const Repository: React.FC<Props> = ({repo, favCount, addToFavorites, removeFromFavorites}) => {
 
     return (
         <Container elevation={1}>
             <h3>{repo.name}</h3>
-            <small>{repo.id}</small>
-            <p>Main Language: <strong>{repo.language}</strong></p>
-            <p>Stars: <strong>{repo.numStars}</strong></p>
-            <p>Forks: <strong>{repo.numForks}</strong></p>
-
+            <p><small>{repo.id}</small></p>
+            { repo.language ? <p>Main Language: <strong>{repo.language}</strong></p> : null }
+            { repo.numStars ? <p>Stars: <strong>{repo.numStars}</strong></p> : null }
+            { repo.numForks ? <p>Forks: <strong>{repo.numForks}</strong></p> : null }
+            { favCount ? <p>Fav count: <strong>{repo.favCount}</strong></p> : null }
             {
                 addToFavorites ?
                     <Button intent='primary' onClick={() => addToFavorites(repo.id)}>Agregar a favoritos</Button>
