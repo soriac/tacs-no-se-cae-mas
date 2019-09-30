@@ -1,5 +1,6 @@
 package org.tacs.grupocuatro.github;
 
+import org.tacs.grupocuatro.github.GitHubRequest.Type;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.enums.Order;
@@ -10,7 +11,9 @@ import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededExceptio
 import org.tacs.grupocuatro.github.query.GitHubQueryBuilder;
 import org.tacs.grupocuatro.github.query.GitHubQueryDecorator;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class GitHubConnect {
 	
@@ -21,7 +24,6 @@ public class GitHubConnect {
     private GitHubConnect() {
 
         String token = System.getenv("GITHUB_TACS");
-        token = "b86b33275070a236a4ed6d71cba50d1d21309bfb";
 
         if (token == null) {
             System.out.println("WARNING - No esta definida la variable de ambiente GITHUB_TACS. Se procede a usar GitHub sin autorizacion");
@@ -48,24 +50,8 @@ public class GitHubConnect {
 
     }
     
-	/* Ejemplo de uso
-
-	GitHubConnect conn = GitHubConnect.getInstance();
-	conn.tryConnection();
-	
-	List<GitHubQueryDecorator> deco = new ArrayList<GitHubQueryDecorator>();
-	deco.add((GitHubQueryDecorator) new Comparison(ValueType.STARS, Comparator.GREATER, 5));
-	deco.add((GitHubQueryDecorator) new Operation(Operator.AND));
-	deco.add((GitHubQueryDecorator) new Between(ValueType.FORKS,10,20));
-	
-	RepositoriesGitHub repo = conn.searchRepository(Order.ASC, Sort.STARS, deco);
-	
-	* Repo tiene links a las proximas llamadas de la API y
-	una lista de los repositorios con los filtros pedidos *
-	
-	*/
     
-    public RepositoriesGitHub searchRepository(Order order, Sort sort, List<GitHubQueryDecorator> decorators) throws GitHubRequestLimitExceededException {
+    public RepositoriesGitHub searchRepository(Order order, Sort sort, List<GitHubQueryDecorator> decorators, String... keyboards) throws GitHubRequestLimitExceededException {
 
         GitHubRequest request = new GitHubRequest(this.token);
         GitHubQueryBuilder query = new GitHubQueryBuilder();
@@ -77,31 +63,23 @@ public class GitHubConnect {
         if (sort != null) {
             query.setSort(sort);
         }
-
+        
+        Arrays.asList(keyboards).forEach(query::putKeyword);
         decorators.forEach(query::putDecorator);
 
         return request.doSearchRepository(query.build());
     
     }
 
-    /* Ejemplo de uso
-     
-    RepositoryGitHub repo1 = conn.findRepositoryById(981938123); <- Tira GitHubRepositoryNotFoundException
-   	RepositoryGitHub repo2 = conn.findRepositoryById(20633049);
-    	
-    */
-
     public RepositoryGitHub findRepositoryById(String id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
         GitHubRequest request = new GitHubRequest(this.token);
         return request.doRepositoryById(id);
     }
     
-	/*
-	public checkLimit() {
+	public Map<String, Integer> getLimits() {
 		
 		GitHubRequest request = new GitHubRequest(this.token);
-		int a,b = request.checkLimit();
+		return request.getLimits(Type.SEARCH);
 		
 	}
-	*/
 }

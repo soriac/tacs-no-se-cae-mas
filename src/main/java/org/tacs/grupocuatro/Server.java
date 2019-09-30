@@ -17,7 +17,7 @@ public class Server {
     public static int port = 8080;
 
     public static void main(String[] args){
-        crearAdministrador();
+    	crearAdministrador();
 
         Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(port);
 
@@ -27,7 +27,6 @@ public class Server {
         app.exception(AuthenticationException.class, (e, ctx) -> ctx.status(401).json(new JsonResponse("Unauthorized.")));
         
         app.routes(() -> {
-            before(GitHubController::authenticate);
 
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
