@@ -6,7 +6,6 @@ import io.javalin.core.JavalinConfig;
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.controller.*;
 import org.tacs.grupocuatro.entity.User;
-import org.tacs.grupocuatro.github.GitHubConnect;
 import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;

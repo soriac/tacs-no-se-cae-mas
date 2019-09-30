@@ -11,8 +11,6 @@ import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededExceptio
 import org.tacs.grupocuatro.github.query.GitHubQueryBuilder;
 import org.tacs.grupocuatro.github.query.GitHubQueryDecorator;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
