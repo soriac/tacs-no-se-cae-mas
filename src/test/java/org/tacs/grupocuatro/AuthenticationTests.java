@@ -18,10 +18,10 @@ class AuthenticationTests {
     @BeforeAll
     static void setup() {
         String[] args = {};
-        Server.port = 808;
+        Server.port = 8081;
         Server.main(args);
 
-        RequestFactory.setApi("http://localhost:808");
+        RequestFactory.setApi("http://localhost:8081");
         DAOManager.clearAllDAOs();
     }
 

@@ -24,6 +24,11 @@ public class GitHubQueryBuilder {
 		return this;
 	}
 	
+	public GitHubQueryBuilder putKeyword(String keyword) {
+		this.query = query + keyword + "+";
+		return this;
+	}
+	
 	public String build() {
 		
 		String str = "?q=";
