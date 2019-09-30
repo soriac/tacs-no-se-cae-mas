@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { useParams } from "react-router";
+import {useParams} from 'react-router';
 import {oneUser} from '../../../api';
 import {AppToaster} from '../../../util/toaster';
 import Layout from './Layout';
@@ -8,7 +8,6 @@ import {User} from '../../../api/types';
 const UserScreen = () => {
     const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<any>(null);
     const { id } = useParams();
 
     const getUser = async (id: string) => {
@@ -26,11 +25,10 @@ const UserScreen = () => {
     };
 
     useEffect(() => {
-        if (id)
-            getUser(id);
-    }, []);
+        if (id) getUser(id);
+    }, [id]);
 
-    return <Layout error={error} loading={loading} user={user}/>;    
+    return <Layout loading={loading} user={user}/>;
 };
 
 export default UserScreen;

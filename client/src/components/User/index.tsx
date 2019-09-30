@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Button, Card} from '@blueprintjs/core';
+import {Card} from '@blueprintjs/core';
 import {User} from '../../api/types';
 
 const Container = styled(Card)`
@@ -28,7 +28,8 @@ const UserComponent: React.FC<Props> = ({user, favCount}) => {
             <p>User: <strong>{user.email}</strong></p>
             <p>Id: <strong>{user.id}</strong></p>
             <p>Last login: <strong>{new Date(user.lastLogin).toISOString().replace('T', ' ').replace('Z', '')}</strong></p>
-            { favCount && user.role == 'USER' ? <p>Favorite repos count: <strong>{user.favRepos.length}</strong></p> : '' }
+            {favCount && user.role === 'USER' ?
+                <p>Favorite repos count: <strong>{user.favRepos.length}</strong></p> : ''}
         </Container>
     );
 

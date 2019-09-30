@@ -1,55 +1,51 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Card, Spinner, Button} from '@blueprintjs/core';
+import {Card, Spinner} from '@blueprintjs/core';
 import {DatePicker} from '@blueprintjs/datetime';
-import Repository from '../../../components/Repository';
-import {Repo} from '../../../api/types';
+import {Root} from '../../../components/Root';
+import {ContentContainer} from '../../../components/ContentContainer';
 
-const Root = styled.div`
-    width: 100vw;
-    max-height: 90vh;
-    overflow-x: hidden;
-    padding: 0.5rem;
-
-    display: flex;
-    justify-content: center;
+const TextContainer = styled.div`
+    margin-bottom: 0;
+    & > * {
+        margin-bottom: 0.5rem;
+    }
 `;
 
-const Container = styled(Card)`
-    & > * {
-        margin-bottom: 1.5rem;
-    }
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    overflow-y: auto;
+const Large = styled.p`
+  font-size: 3rem;
+  text-align: center;
 `;
 
 type Props = {
-    reposCount: number | undefined
+    date: Date
+    setDate: (d: Date) => void
+    repoCount: number | undefined
     loading: boolean
-    error?: any | undefined
-    handleSearch: (since: string) => Promise<void>
 }
-const Layout: React.FC<Props> = ({reposCount, loading, error, handleSearch}) => {
+const Layout: React.FC<Props> = ({date, setDate, repoCount, loading}) => {
 
     return (
         <Root>
-            <Container>
-                <Container>
-                    <DatePicker/>
-                    <Button intent='primary' icon='search'>Search</Button>
-                </Container>
+            <ContentContainer>
+                <h2>Repository Count</h2>
+                <Card>
+                    <DatePicker
+                        value={date}
+                        onChange={setDate}
+                        modifiers={{}}/>
+                </Card>
                 {
                     loading ?
                         <Spinner/>
-                        : reposCount ? 
-                        <p>Repos in sistem since: <strong>reposCount</strong></p>
+                        : (repoCount === 0 || !!repoCount) ?
+                        <TextContainer>
+                            <p>Repos in system since {date.getFullYear()}-{date.getMonth() + 1}-{date.getDate()}:</p>
+                            <Large>{repoCount}</Large>
+                        </TextContainer>
                         : null
                 }
-            </Container>
+            </ContentContainer>
         </Root>
     )
 };

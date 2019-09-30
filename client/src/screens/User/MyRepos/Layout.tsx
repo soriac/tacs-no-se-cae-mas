@@ -1,51 +1,28 @@
 import React from 'react';
-import styled from 'styled-components';
-import {Card, Spinner} from '@blueprintjs/core';
+import {Spinner} from '@blueprintjs/core';
 import Repository from '../../../components/Repository';
 import {Repo} from '../../../api/types';
-
-const Root = styled.div`
-    width: 100vw;
-    max-height: 90vh;
-    overflow-x: hidden;
-    padding: 0.5rem;
-
-    display: flex;
-    justify-content: center;
-`;
-
-const Container = styled(Card)`
-    & > * {
-        margin-bottom: 1.5rem;
-    }
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    overflow-y: auto;
-`;
+import {Root} from '../../../components/Root';
+import {ContentContainer} from '../../../components/ContentContainer';
 
 type Props = {
     repos: Repo[]
     loading: boolean
-    error: any | undefined
     removeFromFavorites?: (id: string) => Promise<void>
 }
-const Layout: React.FC<Props> = ({repos, loading, error, removeFromFavorites}) => {
+const Layout: React.FC<Props> = ({repos, loading, removeFromFavorites}) => {
 
     return (
         <Root>
-            <Container>
+            <ContentContainer>
                 <h2>My repos</h2>
                 {
                     loading ?
                         <Spinner/>
-                        : repos ?
+                        : repos &&
                         repos.map(repo => <Repository repo={repo} removeFromFavorites={removeFromFavorites}/>)
-                        : null
                 }
-            </Container>
+            </ContentContainer>
         </Root>
     )
 };

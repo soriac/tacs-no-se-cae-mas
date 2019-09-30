@@ -1,70 +1,54 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Card, Spinner, Button} from '@blueprintjs/core';
-import { Select } from "@blueprintjs/select";
+import {Spinner} from '@blueprintjs/core';
 import Repository from '../../../components/Repository';
-import {User, Repo} from '../../../api/types';
+import {Repo, User} from '../../../api/types';
+import UserSelect from './UserSelect';
+import {ContentContainer} from '../../../components/ContentContainer';
+import {Root} from '../../../components/Root';
 
-const Root = styled.div`
-    width: 100vw;
-    max-height: 90vh;
-    overflow-x: hidden;
-    padding: 0.5rem;
-
+const ComparatorContainer = styled.div`
     display: flex;
-    justify-content: center;
-`;
-
-const Container = styled(Card)`
-    & > * {
-        margin-bottom: 1.5rem;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    
+    & > :not(:last-child) {
+        margin-right: 0.5rem;
     }
-    
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    
-    overflow-y: auto;
 `;
 
 type Props = {
     users: User[]
+    selectedUsers: [User?, User?]
     repos: Repo[]
-    loading: boolean
-    error: any | undefined
-    compareFunction: (id1: string, id2: string) => Promise<void>
+    loadingUsers: boolean
+    loadingComparison: boolean
+    setUser: (n: number) => (user: User) => void
 }
 
-const renderUser = (user: User) => {
-    return (
-        <span>{user.email}</span>    
-    )
-}
-
-const handleItemSelect = (user: User) => {
-    return (
-        <span>user.email</span>    
-    )
-}
-const Layout: React.FC<Props> = ({users, loading, error, repos, compareFunction}) => {
-
-    const UserSelect = Select.ofType<User>();
-
+const Layout: React.FC<Props> = ({users, loadingUsers, selectedUsers, loadingComparison, repos, setUser}) => {
     return (
         <Root>
-            <Container>
-                <UserSelect items={users} itemRenderer={renderUser} onItemSelect={handleItemSelect}>
-                     <Button text={'Select an option'} rightIcon="double-caret-vertical" />
-                </UserSelect>
-                <h2>My repos</h2>
+            <ContentContainer>
+                <h2>Compare favorite repositories</h2>
                 {
-                    loading ?
+                    loadingUsers ?
                         <Spinner/>
-                        : repos ?
-                        repos.map(repo => <Repository repo={repo}/>)
-                        : null
+                        :
+                        <>
+                            <ComparatorContainer>
+                                <UserSelect users={users} setUser={setUser(0)} selectedUser={selectedUsers[0]}/>
+                                <UserSelect users={users} setUser={setUser(1)} selectedUser={selectedUsers[1]}/>
+                            </ComparatorContainer>
+                            {
+                                loadingComparison ?
+                                    <Spinner/>
+                                    :
+                                    repos.map(repo => <Repository repo={repo}/>)
+                            }
+                        </>
                 }
-            </Container>
+            </ContentContainer>
         </Root>
     )
 };

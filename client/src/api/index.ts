@@ -48,7 +48,7 @@ export function oneUser(id: string | undefined) {
     });
 }
 
-const COMPARE = (id1: string, id2: string) => `${BASE_URL}/users/${id1}/${id2}`;
+const COMPARE = (id1: string, id2: string) => `${BASE_URL}/users/compare/${id1}/${id2}`;
 
 export function compare(id1: string, id2: string) {
     return fetch(COMPARE(id1, id2), {
@@ -69,8 +69,7 @@ const SEARCH_REPOS = (filters: Filter[]) => {
         }
     }, '');
 
-    const url = `${BASE_URL}/repos${queryString}`;
-    return 'http://localhost:8080/repos?forks=gt:30&stars=gt:0&size=gt:0&topics=gt:0&followers=gt:0';
+    return `${BASE_URL}/repos${queryString}`;
 };
 
 export function searchRepos(filters: Filter[]) {
@@ -82,9 +81,16 @@ export function searchRepos(filters: Filter[]) {
     });
 }
 
-const REPOS_COUNT = (since: string) => `${BASE_URL}/repos/count`;
+const REPOS_COUNT = (since?: Date) => {
+    if (since) {
+        const epoch = Math.floor(since.getTime());
+        return `${BASE_URL}/repos/count?since=${epoch}`;
+    } else {
+        return `${BASE_URL}/repos/count`;
+    }
+};
 
-export function reposCount(since: string) {
+export function reposCount(since: Date) {
     return fetch(REPOS_COUNT(since), {
         method: 'GET',
         headers: {

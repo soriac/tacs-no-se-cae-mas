@@ -6,7 +6,7 @@ import {Repo} from '../../api/types';
 const Container = styled(Card)`
     width: 300px;
 
-    * {
+    & > *:not(button) {
         padding: 0;
         margin: 0;
     }
@@ -17,28 +17,28 @@ const Container = styled(Card)`
     }
 `;
 
+const isPresent = (n?: number): boolean => n === 0 || !!n;
+
 type Props = {
     repo: Repo
-    favCount?: boolean | undefined
     addToFavorites?: (id: string) => Promise<void>
     removeFromFavorites?: (id: string) => Promise<void>
 }
-const Repository: React.FC<Props> = ({repo, favCount, addToFavorites, removeFromFavorites}) => {
+const Repository: React.FC<Props> = ({repo, addToFavorites, removeFromFavorites}) => {
 
     return (
-        <Container elevation={1}>
-            <h3>{repo.name}</h3>
+        <Container elevation={2}>
+            <h3 style={{wordWrap: 'break-word'}}>{repo.name}</h3>
             <p><small>{repo.id}</small></p>
-            { repo.language ? <p>Main Language: <strong>{repo.language}</strong></p> : null }
-            { repo.numStars ? <p>Stars: <strong>{repo.numStars}</strong></p> : null }
-            { repo.numForks ? <p>Forks: <strong>{repo.numForks}</strong></p> : null }
-            { favCount ? <p>Fav count: <strong>{repo.favCount}</strong></p> : null }
+            {repo.language && <p>Main Language: <strong>{repo.language}</strong></p>}
+            {isPresent(repo.numStars) && <p>Stars: <strong>{repo.numStars}</strong></p>}
+            {isPresent(repo.numForks) && <p>Forks: <strong>{repo.numForks}</strong></p>}
+            {isPresent(repo.favCount) && <p>Fav count: <strong>{repo.favCount}</strong></p>}
             {
                 addToFavorites ?
-                    <Button intent='primary' onClick={() => addToFavorites(repo.id)}>Agregar a favoritos</Button>
-                    : removeFromFavorites ?
-                    <Button intent='primary' onClick={() => removeFromFavorites(repo.id)}>Eliminar de favoritos</Button>
-                    : null
+                    <Button intent='success' onClick={() => addToFavorites(repo.id)}>Add</Button>
+                    : removeFromFavorites &&
+                  <Button intent='danger' onClick={() => removeFromFavorites(repo.id)}>Remove</Button>
             }
         </Container>
     );

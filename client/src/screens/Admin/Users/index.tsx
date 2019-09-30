@@ -7,7 +7,6 @@ import {User} from '../../../api/types';
 const Users = () => {
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<any>(null);
 
     const getUsers = async () => {
         setLoading(true);
@@ -28,7 +27,7 @@ const Users = () => {
         getUsers();
     }, []);
 
-    return <Layout error={error} loading={loading} users={users} refetch={getUsers}/>;
+    return <Layout loading={loading} users={users} refetch={getUsers}/>;
 };
 
 export default Users;

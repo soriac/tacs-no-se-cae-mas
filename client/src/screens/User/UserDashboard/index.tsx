@@ -7,7 +7,6 @@ import {User} from '../../../api/types';
 const UserDashboard = () => {
     const [user, setUser] = useState<User>();
     const [loading, setLoading] = useState<boolean>(false);
-    const [error, setError] = useState<any>(null);
 
     const getUser = async () => {
         setLoading(true);
@@ -28,7 +27,7 @@ const UserDashboard = () => {
         getUser();
     }, []);
 
-    return <Layout error={error} loading={loading} user={user}/>;    
+    return <Layout loading={loading} user={user}/>;
 };
 
 export default UserDashboard;
