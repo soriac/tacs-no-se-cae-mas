@@ -37,6 +37,28 @@ export function me() {
     });
 }
 
+const ONE_USER = (id: string | undefined) => `${BASE_URL}/users/${id}`;
+
+export function oneUser(id: string | undefined) {
+    return fetch(ONE_USER(id), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+const COMPARE = (id1: string, id2: string) => `${BASE_URL}/users/${id1}/${id2}`;
+
+export function compare(id1: string, id2: string) {
+    return fetch(COMPARE(id1, id2), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
 const SEARCH_REPOS = (filters: Filter[]) => {
     const queryString = filters.reduce((acc: string, filter: Filter) => {
         const param = `${filter.param}=${filter.op}:${filter.value}`;
@@ -48,7 +70,6 @@ const SEARCH_REPOS = (filters: Filter[]) => {
     }, '');
 
     const url = `${BASE_URL}/repos${queryString}`;
-    console.log(url);
     return 'http://localhost:8080/repos?forks=gt:30&stars=gt:0&size=gt:0&topics=gt:0&followers=gt:0';
 };
 
@@ -61,11 +82,55 @@ export function searchRepos(filters: Filter[]) {
     });
 }
 
+const REPOS_COUNT = (since: string) => `${BASE_URL}/repos/count`;
+
+export function reposCount(since: string) {
+    return fetch(REPOS_COUNT(since), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+const MY_REPOS = () => `${BASE_URL}/users/me/favorites`;
+
+export function myRepos() {
+    return fetch(MY_REPOS(), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
 const GET_USERS = () => `${BASE_URL}/users`;
 
 export function allUsers() {
     return fetch(GET_USERS(), {
         method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+const ADD_TO_FAVORITES = (id: string) => `${BASE_URL}/users/me/favorites/${id}`;
+
+export function addToFavorites(id: string) {
+    return fetch(ADD_TO_FAVORITES(id), {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+const REMOVE_FROM_FAVORITES = (id: string) => `${BASE_URL}/users/me/favorites/${id}`;
+
+export function removeFromFavorites(id: string) {
+    return fetch(REMOVE_FROM_FAVORITES(id), {
+        method: 'DELETE',
         headers: {
             'Authorization': `Bearer ${getToken()}`
         }

@@ -2,8 +2,6 @@ import React from 'react';
 import styled from 'styled-components';
 import {Card, Spinner} from '@blueprintjs/core';
 import Repository from '../../../components/Repository';
-import FilterGroup from '../../../components/RepositorySearchFilter/FilterGroup';
-import {ToggleableFilter} from './index';
 import {Repo} from '../../../api/types';
 
 const Root = styled.div`
@@ -32,22 +30,20 @@ type Props = {
     repos: Repo[]
     loading: boolean
     error: any | undefined
-    handleSearch: (filter: ToggleableFilter[]) => Promise<void>
+    removeFromFavorites?: (id: string) => Promise<void>
 }
-const Layout: React.FC<Props> = ({repos, loading, error, handleSearch}) => {
+const Layout: React.FC<Props> = ({repos, loading, error, removeFromFavorites}) => {
 
     return (
         <Root>
             <Container>
-                <h2>Repository Search</h2>
-                <FilterGroup handleSearch={handleSearch}/>
+                <h2>My repos</h2>
                 {
                     loading ?
                         <Spinner/>
                         : repos ?
-                        repos.map(repo => <Repository repo={repo} favCount/>)
+                        repos.map(repo => <Repository repo={repo} removeFromFavorites={removeFromFavorites}/>)
                         : null
-
                 }
             </Container>
         </Root>

@@ -1,10 +1,8 @@
 import React from 'react';
 import styled from 'styled-components';
 import {Card, Spinner} from '@blueprintjs/core';
-import Repository from '../../../components/Repository';
-import FilterGroup from '../../../components/RepositorySearchFilter/FilterGroup';
-import {ToggleableFilter} from './index';
-import {Repo} from '../../../api/types';
+import UserComponent from '../../../components/User';
+import {User} from '../../../api/types';
 
 const Root = styled.div`
     width: 100vw;
@@ -29,25 +27,22 @@ const Container = styled(Card)`
 `;
 
 type Props = {
-    repos: Repo[]
+    user: User | undefined
     loading: boolean
     error: any | undefined
-    handleSearch: (filter: ToggleableFilter[]) => Promise<void>
 }
-const Layout: React.FC<Props> = ({repos, loading, error, handleSearch}) => {
+const Layout: React.FC<Props> = ({user, loading, error}) => {
 
     return (
         <Root>
             <Container>
-                <h2>Repository Search</h2>
-                <FilterGroup handleSearch={handleSearch}/>
+                <h2>Landing user</h2>
                 {
-                    loading ?
-                        <Spinner/>
-                        : repos ?
-                        repos.map(repo => <Repository repo={repo} favCount/>)
-                        : null
-
+                loading ? 
+                    <Spinner/> 
+                : user ? 
+                    <UserComponent user={user}/> 
+                : ''
                 }
             </Container>
         </Root>

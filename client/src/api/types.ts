@@ -25,6 +25,7 @@ export type Repo = {
     numStars: number
     language: string
     favCount: number | undefined
+    added: number | undefined 
 }
 
 export type Parameter = 'forks' | 'stars' | 'size' | 'topics' | 'followers'

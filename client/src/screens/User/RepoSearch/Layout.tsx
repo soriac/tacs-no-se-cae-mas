@@ -33,8 +33,10 @@ type Props = {
     loading: boolean
     error: any | undefined
     handleSearch: (filter: ToggleableFilter[]) => Promise<void>
+    addToFavorites?: (id: string) => Promise<void>
+    myRepos: string[]
 }
-const Layout: React.FC<Props> = ({repos, loading, error, handleSearch}) => {
+const Layout: React.FC<Props> = ({repos, loading, error, handleSearch, addToFavorites, myRepos}) => {
 
     return (
         <Root>
@@ -45,9 +47,18 @@ const Layout: React.FC<Props> = ({repos, loading, error, handleSearch}) => {
                     loading ?
                         <Spinner/>
                         : repos ?
-                        repos.map(repo => <Repository repo={repo} favCount/>)
+                            repos.map(repo => {
+                                console.log(repo.id)
+                                console.log(repo)
+                                console.log(myRepos)
+                                if (myRepos.includes(repo.id.toString())) {
+                                    return <Repository repo={repo}/>
+                                }
+                                else {
+                                    return <Repository repo={repo} addToFavorites={addToFavorites}/>   
+                                }
+                            })
                         : null
-
                 }
             </Container>
         </Root>

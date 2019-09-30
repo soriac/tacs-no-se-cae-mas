@@ -21,7 +21,7 @@ public class GitHubConnect {
     private GitHubConnect() {
 
         String token = System.getenv("GITHUB_TACS");
-        token = "a857acde8630f13bbf71c2ba33563df4612bfc13";
+        token = "b86b33275070a236a4ed6d71cba50d1d21309bfb";
 
         if (token == null) {
             System.out.println("WARNING - No esta definida la variable de ambiente GITHUB_TACS. Se procede a usar GitHub sin autorizacion");
