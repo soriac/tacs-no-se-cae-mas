@@ -1,76 +1,120 @@
 package org.tacs.grupocuatro.controller;
 
+import at.favre.lib.crypto.bcrypt.BCrypt;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import io.javalin.core.security.Role;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.JsonResponse;
-import org.tacs.grupocuatro.Server;
-import org.tacs.grupocuatro.entity.ApplicationRoles;
+import org.tacs.grupocuatro.entity.ApplicationRole;
+import org.tacs.grupocuatro.entity.User;
 
+import java.util.Date;
 import java.util.Set;
 
-import static org.tacs.grupocuatro.entity.ApplicationRoles.ADMIN;
-
 public class AuthenticationController {
+    private static Algorithm algorithm = Algorithm.HMAC256("el-secreto-para-tacs");
+    private static JWTVerifier verifier = JWT.require(algorithm).build();
+
     public static void signup(Context ctx) {
-        // parsamos el cuerpo como una clase, javalin valida
-        var user = ctx.bodyAsClass(AuthenticationPayload.class);
-        ctx.json(new JsonResponse("Signed up!").with(user));
+        var data = ctx.bodyAsClass(AuthenticationPayload.class);
+
+        if (data.getEmail().length() < 2 | !data.getEmail().contains("@")) {
+            ctx.status(400).json(new JsonResponse("Signup failed", "Invalid email"));
+            return;
+        }
+
+        if (data.getPassword().length() < 2) {
+            ctx.status(400).json(new JsonResponse("Signup failed", "Invalid password"));
+            return;
+        }
+
+
+        var user = new User();
+        var hashedPassword = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
+
+        user.setEmail(data.getEmail());
+        user.setPassword(hashedPassword);
+        user.setRole(ApplicationRole.USER);
+        UserDAO.getInstance().save(user);
+
+        // TODO: debería omitir el password hasheado
+        ctx.status(201).json(new JsonResponse("Signed up!").with(user));
     }
 
     public static void login(Context ctx) {
-        // cookiestore funciona entre diferentes instancias
-        // eventualmente debería ser algun hash o un jwt
-        var userId = 1234;
-        ctx.cookieStore("userId", userId);
-        ctx.json(new JsonResponse("Logged in!").with(userId));
+        var data = ctx.bodyAsClass(AuthenticationPayload.class);
+        var user = UserDAO.getInstance().findByUser(data.getEmail());
+
+        // no existe el usuario
+        if (user.isEmpty()) {
+            ctx.status(404).json(new JsonResponse("", "User not found, or password is wrong"));
+        } else {
+            var result = BCrypt.verifyer().verify(data.getPassword().toCharArray(), user.get().getPassword());
+            if (!result.verified) {
+                // contraseña incorrecta
+                ctx.status(404).json(new JsonResponse("", "User not found, or password is wrong"));
+            } else {
+                user.get().setLastLogin(new Date());
+                var token = JWT.create()
+                        .withClaim("id", user.get().getId())
+                        .withClaim("role", user.get().getRole().toString())
+                        .sign(algorithm);
+
+                ctx.cookieStore("token", token);
+                ctx.status(201).json(new JsonResponse("Logged in!").with(token));
+            }
+        }
     }
 
     public static void logout(Context ctx) {
         ctx.clearCookieStore();
-        ctx.json(new JsonResponse("Logged out!"));
+        ctx.status(200).json(new JsonResponse("Logged out!"));
     }
 
-    private static ApplicationRoles getUserRole(Context ctx) {
-        // debería llamar al userDAO con el id del usuario
-        // y devolver el rol de ese usuario
-        return ADMIN;
+    private static ApplicationRole getUserRole(String id) {
+        var user = UserDAO.getInstance().get(id);
+        if (user.isEmpty()) return ApplicationRole.ANONYMOUS;
+        else return user.get().getRole();
     }
 
     public static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
-        var role = getUserRole(ctx);
+        var tokenCookie = ctx.cookieStore("token");
+        var tokenHeader = ctx.header("Authorization");
 
-        if (permittedRoles.contains(role) || Server.DEBUG && role == ADMIN) {
-            ctx.attribute("role", role);
+        String token;
+        if (tokenCookie != null) {
+            token = tokenCookie.toString();
+        } else if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
+            token = tokenHeader.replace("Bearer ", "");
+        } else if (permittedRoles.isEmpty()) {
             handler.handle(ctx);
+            return;
         } else {
-            ctx.status(401).result("Unauthorized.");
+            throw new AuthenticationException();
         }
-    }
-}
 
-class AuthenticationPayload {
-    private String username;
-    private String password;
+        try {
+            var result = verifier.verify(token);
+            var id = result.getClaim("id").asString();
+            // mejor que lea el role desde el claim del jwt,
+            // pasa que hay que hacer una funcion que haga string -> applicationrole
+            var role = getUserRole(id);
 
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String toString() {
-        return "Username: " + username + ", Password: " + password;
+            if (permittedRoles.contains(role)) {
+                ctx.attribute("id", id);
+                ctx.attribute("role", role);
+                handler.handle(ctx);
+            } else {
+                throw new AuthenticationException();
+            }
+        } catch (JWTVerificationException ignored) {
+            throw new AuthenticationException();
+        }
     }
 }
 

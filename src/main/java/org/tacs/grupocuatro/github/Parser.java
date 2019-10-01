@@ -27,42 +27,60 @@ public class Parser {
 			
 			JSONObject repoJson = jsonArray.getJSONObject(n);
 			
-			RepositoryGitHub repo = new RepositoryGitHub(
-					repoJson.optLong("id", 0),
-					repoJson.optString("full_name", null),
-					repoJson.optInt("forks_count", 0),
-					repoJson.optInt("stargazers_count", 0),
-					repoJson.optString("language", null));
-			
-			repos.add(repo);
+			repos.add(Parser.parseRepository(repoJson));
 			
 		}
 		
 		reposGitHub.setRepos(repos);
 		
-		List<String> links = Arrays.asList(response.headers().firstValue("Link").orElse("").split(","));
+		String headerLinks = response.headers().firstValue("Link").orElse(null);
 		
-		
-		for(String link : links) {
+		if(headerLinks == null) {
 			
-			String[] linkRel = link.split(";");
-			String url = linkRel[0].replaceAll("<|>| ", "");
+			reposGitHub.setFirstPage(null);
+			reposGitHub.setLastPage(null);
+			reposGitHub.setNextPage(null);
+			reposGitHub.setPrevPage(null);
 
-			if(linkRel[1].contains("first")){
-				reposGitHub.setFirstPage(url);
-			} else if(linkRel[1].contains("last")) {
-				reposGitHub.setLastPage(url);
+		} else {
+			
+			List<String> links = Arrays.asList(response.headers().firstValue("Link").orElse("").split(","));
+			
+			for(String link : links) {
+				
+				String[] linkRel = link.split(";");
+				String url = linkRel[0].replaceAll("<|>| ", "");
 
-			} else if(linkRel[1].contains("next")) {
-				reposGitHub.setNextPage(url);
+				if(linkRel[1].contains("first")){
+					reposGitHub.setFirstPage(url);
+				} else if(linkRel[1].contains("last")) {
+					reposGitHub.setLastPage(url);
 
-			} else if(linkRel[1].contains("prev")) {
-				reposGitHub.setPrevPage(url);
+				} else if(linkRel[1].contains("next")) {
+					reposGitHub.setNextPage(url);
+
+				} else if(linkRel[1].contains("prev")) {
+					reposGitHub.setPrevPage(url);
+				}
+				
 			}
 			
 		}
 
 		return reposGitHub;
+		
+	}
+	
+	public static RepositoryGitHub parseRepository(JSONObject json) {
+		
+		RepositoryGitHub repo = new RepositoryGitHub(
+				json.optLong("id", 0),
+				json.optString("full_name", null),
+				json.optInt("forks_count", 0),
+				json.optInt("stargazers_count", 0),
+				json.optString("language", null));
+		
+		return repo;
 		
 	}
 	
