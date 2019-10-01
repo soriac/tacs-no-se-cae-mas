@@ -44,7 +44,16 @@ curl -H "Authorization: bearer TOKEN" -X GET https://api.github.com/graphql
 - https://help.github.com/en/articles/understanding-the-search-syntax/
 
 
+### TelegramBot GitHub API
 
+Para poder iniciar una conversacion el TelegramBot primero:
+
+- Instalar y levantar ngrok en puerto 8080
+- Copiar y pegar la web HTTPS en la variable telegram_webhook de la clase Server
+- Levantar el server
+- (Opcion 1) Abrir el siguiente link: https://t.me/GitHubTacsBot
+- (Opcion 2) Escribir @GitHubTacsBot en algun chat y hacer click
+- Mandar el mensaje /start al bot por Telegram
 
 
 
