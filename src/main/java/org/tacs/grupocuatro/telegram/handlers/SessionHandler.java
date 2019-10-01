@@ -4,12 +4,12 @@ import java.util.Optional;
 
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.entity.User;
-import org.tacs.grupocuatro.telegram.TelegramSessions;
-import org.tacs.grupocuatro.telegram.TelegramSessions.UserSession;
+import org.tacs.grupocuatro.telegram.TelegramUserSession;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 
 public class SessionHandler extends TelegramHandler {
 	
@@ -18,7 +18,7 @@ public class SessionHandler extends TelegramHandler {
 	}
 
 	@Override
-	public void handleCommand(String command, Update update) throws TelegramHandlerNotExistsException {
+	public void handleCommand(String command, Update update, int justification) throws TelegramHandlerNotExistsException {
 		
 		switch(command) {
 			
@@ -31,26 +31,30 @@ public class SessionHandler extends TelegramHandler {
 				break;
 				
 			default:
-				this.handleCommandNext(command, update);
+				this.handleCommandNext(command, update, 2);
 		
 		}
 	
 	}
 	
 	
-	public void login(Update update) {
+	private void login(Update update) {
 		
 		String[] message = update.message().text().split(" ");
 		long chatId = update.message().chat().id();
-		TelegramSessions sessions = TelegramSessions.getInstance();
+		
 		if(message.length != 3) {
-			bot.replyMessage("/login email password", update);
+			
+			SendMessage req = new SendMessage(chatId, "/login email password");
+	    	bot.getTGBot().execute(req);
+	    	
 		} else {
 			
-			Optional<UserSession> userSession = sessions.getSessionByChatId(chatId);
+			Optional<TelegramUserSession> userSession = sessions.getSessionByChatId(chatId);
 			
 			if(userSession.isPresent()) {
-				bot.replyMessage("Usted ya se encuentra con una sesion iniciada", update);
+				SendMessage req = new SendMessage(chatId, "Usted ya se encuentra con una sesion iniciada");
+		    	bot.getTGBot().execute(req);
 			} else {
 				
 				String email = message[1];
@@ -59,11 +63,13 @@ public class SessionHandler extends TelegramHandler {
 				Optional<User> user = UserDAO.getInstance().findUser(email, pass);
 				
 				if(user.isEmpty()) {
-					bot.replyMessage("Credenciales incorrectas", update);
+					SendMessage req = new SendMessage(chatId, "Credenciales incorrectas");
+			    	bot.getTGBot().execute(req);
 				} else {
 					
 					sessions.createSession(user.get(), update.message().chat().id());
-					bot.replyMessage("Te has logueado correctamente", update);
+					SendMessage req = new SendMessage(chatId, "Te has logueado correctamente");
+			    	bot.getTGBot().execute(req);
 
 				}
 				
@@ -73,25 +79,31 @@ public class SessionHandler extends TelegramHandler {
 		
 	}
 	
-	public void logout(Update update) {
+	private void logout(Update update) {
 		
 		String[] message = update.message().text().split(" ");
 		long chatId = update.message().chat().id();
-		TelegramSessions sessions = TelegramSessions.getInstance();
 		
 		if(message.length != 1) {
-			bot.replyMessage("/logout", update);
+			
+			SendMessage req = new SendMessage(chatId, "/logout");
+	    	bot.getTGBot().execute(req);
+	    	
 		} else {
 			
-			Optional<UserSession> userSession = sessions.getSessionByChatId(chatId);
+			Optional<TelegramUserSession> userSession = sessions.getSessionByChatId(chatId);
 			
 			if(userSession.isEmpty()) {
-				bot.replyMessage("Usted no ha iniciado sesion", update);
+				
+				SendMessage req = new SendMessage(chatId, "Usted no ha iniciado sesion");
+		    	bot.getTGBot().execute(req);
+		    	
 			} else {
 				
 				sessions.removeSession(userSession.get());
-				bot.replyMessage("Te has deslogueado", update);
-				
+				SendMessage req = new SendMessage(chatId, "Te has deslogueado");
+		    	bot.getTGBot().execute(req);
+								
 			}
 			
 		}

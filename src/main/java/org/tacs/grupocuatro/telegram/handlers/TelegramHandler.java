@@ -1,6 +1,7 @@
 package org.tacs.grupocuatro.telegram.handlers;
 
 import org.tacs.grupocuatro.telegram.TelegramGHBot;
+import org.tacs.grupocuatro.telegram.TelegramSessions;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
@@ -10,9 +11,11 @@ public abstract class TelegramHandler {
 	
 	public TelegramHandler next;
 	public TelegramGHBot bot;
+	public TelegramSessions sessions;
 	
 	public TelegramHandler() throws TelegramTokenNotFoundException {
 		this.bot = TelegramGHBot.getInstance();
+		this.sessions = TelegramSessions.getInstance();
 	}
 	
 	public TelegramHandler linkNext(TelegramHandler next) {
@@ -20,16 +23,20 @@ public abstract class TelegramHandler {
 		return next;
 	}
 	
-	public abstract void handleCommand(String command, Update update) throws TelegramHandlerNotExistsException;
+	public abstract void handleCommand(String command, Update update, int justification) throws TelegramHandlerNotExistsException;
 	
-	protected void handleCommandNext(String command, Update update) throws TelegramHandlerNotExistsException {
+	protected void handleCommandNext(String command, Update update, int justification) throws TelegramHandlerNotExistsException {
 		
 		if (next == null) {
 			throw new TelegramHandlerNotExistsException();
 		} else {
-			next.handleCommand(command, update);
+			next.handleCommand(command, update, justification);
 		}
 	
+	}
+	
+	public boolean isUserLogged(long chatId) {
+		return sessions.getSessionByChatId(chatId).isPresent();
 	}
 	
 }

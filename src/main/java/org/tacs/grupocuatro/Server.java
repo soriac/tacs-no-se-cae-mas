@@ -19,7 +19,7 @@ import static org.tacs.grupocuatro.entity.ApplicationRole.USER;
 public class Server {
 	
     public static int port = 8080;
-    public static String telegram_webhook = "https://d103e6bb.ngrok.io" + "/bot";
+    public static String telegram_webhook = "https://53af73a8.ngrok.io" + "/bot";
 
     public static void main(String[] args) throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException{
     	

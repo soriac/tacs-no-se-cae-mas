@@ -5,11 +5,12 @@ import java.util.List;
 import java.util.Optional;
 
 import org.tacs.grupocuatro.entity.User;
+import org.tacs.grupocuatro.telegram.TelegramUserSession.SessionState;
 
 public class TelegramSessions {
 	
 	private static TelegramSessions instance;
-	private List<UserSession> users = new ArrayList<UserSession>();
+	private List<TelegramUserSession> users = new ArrayList<TelegramUserSession>();
 	
 	private TelegramSessions() {
 		super();	
@@ -23,30 +24,23 @@ public class TelegramSessions {
     }
 	
 	
-	public UserSession createSession(User user, long chatId) {
-		UserSession userSession = new UserSession(user,chatId);
+	public TelegramUserSession createSession(User user, long chatId) {
+		TelegramUserSession userSession = new TelegramUserSession(user,chatId);
 		this.users.add(userSession);
 		return userSession;
 	}
 	
-	public void removeSession(UserSession user) {
+	public void removeSession(TelegramUserSession user) {
 		this.users.remove(user);
 	}
 	
-	public Optional<UserSession> getSessionByChatId(long chatId) {
+	public Optional<TelegramUserSession> getSessionByChatId(long chatId) {
 		return users.stream().filter(u -> u.chatId == chatId).findFirst();
 	}
-
-	public class UserSession{
-		
-		public User user;
-		public long chatId;
-		
-		public UserSession(User user, long chatId) {
-			this.user = user;
-			this.chatId = chatId;
-		}
-		
+	
+	public void modStateSession(long chatId, SessionState state) {
+		TelegramUserSession session = users.stream().filter(u -> u.chatId == chatId).findFirst().get();
+		session.state = state;
 	}
 	
 }

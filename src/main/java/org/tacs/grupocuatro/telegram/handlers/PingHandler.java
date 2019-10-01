@@ -4,6 +4,7 @@ import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsExceptio
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 
 public class PingHandler extends TelegramHandler{
 
@@ -12,23 +13,22 @@ public class PingHandler extends TelegramHandler{
 	}
 	
 	@Override
-	public void handleCommand(String command, Update update) throws TelegramHandlerNotExistsException {
+	public void handleCommand(String command, Update update, int justification) throws TelegramHandlerNotExistsException {
 		
-		switch(command) {
-			
-			case "/ping":
-				this.ping(update);
-				break;
-				
-			default:
-				this.handleCommandNext(command, update);
-		
+		if(command.equals("/ping")) {
+			this.ping(update);
+		} else {
+			this.handleCommandNext(command, update, 1);
 		}
-	
+
 	}
 	
 	private void ping(Update update) {
-		this.bot.replyMessage("Pong!", update);
+		
+		long chatId = update.message().chat().id();
+		SendMessage req = new SendMessage(chatId, "Pong!");
+    	bot.getTGBot().execute(req);
+		
 	}
 	
 }

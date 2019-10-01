@@ -1,11 +1,14 @@
 package org.tacs.grupocuatro.telegram;
 
+
 import org.tacs.grupocuatro.telegram.exceptions.*;
 import org.tacs.grupocuatro.telegram.handlers.*;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.request.AnswerCallbackQuery;
 import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
@@ -74,6 +77,7 @@ public class TelegramGHBot {
     	
     	TelegramHandler telegramHandler = new SessionHandler();
     	telegramHandler
+    				.linkNext(new RepositoryHandler())
     				.linkNext(new PingHandler())
     				.linkNext(new DefaultHandler());
     	
@@ -83,20 +87,14 @@ public class TelegramGHBot {
     
     public void handleUpdate(Update update) {
     	
-    	String command = update.message().text().split(" ")[0];
-    	
+    	Message message = update.message();
+    	String command = message.text().split(" ")[0];
+
     	try {
-			this.handler.handleCommand(command, update);
+			this.handler.handleCommand(command, update, 2);
 		} catch (TelegramHandlerNotExistsException e) {
 			System.out.println("No encontre handler para el comando " + command);
 		}
-    	
-    }
-    
-    public void replyMessage(String message, Update update) {
-    	
-    	SendMessage req = new SendMessage(update.message().chat().id(), message);
-    	bot.execute(req);
     	
     }
     

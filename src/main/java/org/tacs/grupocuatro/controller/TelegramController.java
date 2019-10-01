@@ -13,15 +13,9 @@ public class TelegramController {
 	public static void update(Context ctx) throws TelegramTokenNotFoundException {
 		
 		TelegramGHBot bot = TelegramGHBot.getInstance();
-		
 		Update update = BotUtils.parseUpdate(ctx.body());
-		
 		bot.handleUpdate(update);
-		//Message mess = update.message();		
-		
-		
-		/*SendResponse response = bot.getTGBot().execute(new SendMessage(mess.chat().id(),"Pong!"));*/
-		
+
 	}
 	
 }
