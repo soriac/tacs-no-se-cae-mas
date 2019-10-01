@@ -45,4 +45,8 @@ public class JsonResponse {
         this.data = obj;
         return this;
     }
+
+    // PARA DESERIALIZAR JSON, NO BORRAR!
+    public JsonResponse() {
+    }
 }

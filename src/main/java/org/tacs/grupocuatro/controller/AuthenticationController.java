@@ -16,29 +16,39 @@ import org.tacs.grupocuatro.entity.User;
 import java.util.Date;
 import java.util.Set;
 
-import static org.tacs.grupocuatro.entity.ApplicationRole.ANONYMOUS;
-
 public class AuthenticationController {
     private static Algorithm algorithm = Algorithm.HMAC256("el-secreto-para-tacs");
     private static JWTVerifier verifier = JWT.require(algorithm).build();
 
     public static void signup(Context ctx) {
         var data = ctx.bodyAsClass(AuthenticationPayload.class);
+
+        if (data.getEmail().length() < 2 | !data.getEmail().contains("@")) {
+            ctx.status(400).json(new JsonResponse("Signup failed", "Invalid email"));
+            return;
+        }
+
+        if (data.getPassword().length() < 2) {
+            ctx.status(400).json(new JsonResponse("Signup failed", "Invalid password"));
+            return;
+        }
+
+
         var user = new User();
         var hashedPassword = BCrypt.withDefaults().hashToString(12, data.getPassword().toCharArray());
 
-        user.setUsername(data.getUsername());
+        user.setEmail(data.getEmail());
         user.setPassword(hashedPassword);
         user.setRole(ApplicationRole.USER);
         UserDAO.getInstance().save(user);
 
-        // debería omitir el password hasheado
+        // TODO: debería omitir el password hasheado
         ctx.status(201).json(new JsonResponse("Signed up!").with(user));
     }
 
     public static void login(Context ctx) {
         var data = ctx.bodyAsClass(AuthenticationPayload.class);
-        var user = UserDAO.getInstance().findByUser(data.getUsername());
+        var user = UserDAO.getInstance().findByUser(data.getEmail());
 
         // no existe el usuario
         if (user.isEmpty()) {
@@ -63,7 +73,7 @@ public class AuthenticationController {
 
     public static void logout(Context ctx) {
         ctx.clearCookieStore();
-        ctx.json(new JsonResponse("Logged out!"));
+        ctx.status(200).json(new JsonResponse("Logged out!"));
     }
 
     private static ApplicationRole getUserRole(String id) {
@@ -74,51 +84,37 @@ public class AuthenticationController {
 
     public static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
         var tokenCookie = ctx.cookieStore("token");
-        if (tokenCookie == null) {
+        var tokenHeader = ctx.header("Authorization");
+
+        String token;
+        if (tokenCookie != null) {
+            token = tokenCookie.toString();
+        } else if (tokenHeader != null && tokenHeader.startsWith("Bearer ")) {
+            token = tokenHeader.replace("Bearer ", "");
+        } else if (permittedRoles.isEmpty()) {
             handler.handle(ctx);
             return;
-        };
-
-
-        var token = tokenCookie.toString();
+        } else {
+            throw new AuthenticationException();
+        }
 
         try {
             var result = verifier.verify(token);
             var id = result.getClaim("id").asString();
+            // mejor que lea el role desde el claim del jwt,
+            // pasa que hay que hacer una funcion que haga string -> applicationrole
             var role = getUserRole(id);
 
-            if (permittedRoles.contains(role) || permittedRoles.isEmpty()) {
+            if (permittedRoles.contains(role)) {
                 ctx.attribute("id", id);
                 ctx.attribute("role", role);
                 handler.handle(ctx);
             } else {
-                ctx.status(401).result("Unauthorized.");
+                throw new AuthenticationException();
             }
         } catch (JWTVerificationException ignored) {
-            ctx.attribute("id", "-1");
-            ctx.attribute("role", ANONYMOUS);
+            throw new AuthenticationException();
         }
-    }
-}
-
-class AuthenticationPayload {
-    private String username;
-    private String password;
-
-    String getUsername() {
-        return username;
-    }
-    String getPassword() {
-        return password;
-    }
-    public void setUsername(String username) {
-        this.username = username;
-    }
-    public void setPassword(String password) {
-        this.password = password;
-    }
-    public String toString() {
-        return "Username: " + username + ", Password: " + password;
     }
 }
 
