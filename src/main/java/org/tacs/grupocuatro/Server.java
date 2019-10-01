@@ -7,6 +7,9 @@ import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.controller.*;
 import org.tacs.grupocuatro.entity.User;
 import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
+import org.tacs.grupocuatro.telegram.TelegramGHBot;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramCannotSetWebhookException;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -14,11 +17,18 @@ import static org.tacs.grupocuatro.entity.ApplicationRole.ADMIN;
 import static org.tacs.grupocuatro.entity.ApplicationRole.USER;
 
 public class Server {
+	
     public static int port = 8080;
+    public static String telegram_webhook = "https://d103e6bb.ngrok.io" + "/bot";
 
-    public static void main(String[] args){
+    public static void main(String[] args) throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException{
+    	
+    	TelegramGHBot bot = TelegramGHBot.getInstance();
+		bot.start(telegram_webhook + bot.getToken());
+    	
     	crearAdministrador();
-
+    	crearUsuario();
+    	
         Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(port);
 
         app.config.accessManager(AuthenticationController::handleAuth);
@@ -31,7 +41,10 @@ public class Server {
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
             post("/logout", AuthenticationController::logout);
-
+            
+            // Telegram Bot
+            post("/bot" + bot.getToken(), TelegramController::update);
+            
             path("/users", () -> {
                 path("/me", () -> {
                     get(UserController::me, roles(USER, ADMIN));
@@ -60,6 +73,15 @@ public class Server {
         admin.setRole(ADMIN);
         admin.setId("1");
         UserDAO.getInstance().save(admin);
+    }
+    
+    private static void crearUsuario() {
+    	var user = new User();
+    	user.setEmail("prueba");
+    	user.setPassword("prueba");
+    	user.setRole(USER);
+    	user.setId("2");
+        UserDAO.getInstance().save(user);
     }
     
 }

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.tacs.grupocuatro.controller.AuthenticationPayload;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramCannotSetWebhookException;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 import org.tacs.grupocuatro.util.DAOManager;
 import org.tacs.grupocuatro.util.RequestFactory;
 
@@ -16,12 +18,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class AuthenticationTests {
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException {
         String[] args = {};
         Server.port = 8081;
         Server.main(args);
 
-        RequestFactory.setApi("http://localhost:8081");
+        RequestFactory.setApi("http://localhost:" + Integer.toString(Server.port));
         DAOManager.clearAllDAOs();
     }
 
