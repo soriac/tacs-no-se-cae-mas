@@ -3,37 +3,47 @@ package org.tacs.grupocuatro.entity;
 import java.util.Date;
 
 public class Repository {
-	
-	private String id;
-	private String name;
-	private Date added;
-	
-	public Repository(String id, String name) {
-		this.id = id;
-		this.name = name;
-	}
 
-	public String getId() {
-		return id;
-	}
+    private String id;
+    private String name;
+    private Date added;
+    private String language;
 
-	public void setId(String id) {
-		this.id = id;
-	}
+    public Repository(String id, String name, String language) {
+        this.id = id;
+        this.name = name;
+        this.language = language;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getId() {
+        return id;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-	public Date getAdded() {
-		return added;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setAdded(Date added) {
-		this.added = added;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Date getAdded() {
+        return added;
+    }
+
+    public void setAdded(Date added) {
+        this.added = added;
+    }
+
+    public String getLanguage() {
+        return language;
+    }
+
+    public void setLanguage(String language) {
+        this.language = language;
+    }
 }

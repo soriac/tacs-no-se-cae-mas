@@ -30,6 +30,8 @@ const UserComponent: React.FC<Props> = ({user, favCount}) => {
             <p>Last login: <strong>{new Date(user.lastLogin).toISOString().replace('T', ' ').replace('Z', '')}</strong></p>
             {favCount && user.role === 'USER' ?
                 <p>Favorite repos count: <strong>{user.favRepos.length}</strong></p> : ''}
+            {user.favoriteLanguage !== "" ?
+                <p>Preferred language: <strong>{user.favoriteLanguage}</strong></p> : ''}
         </Container>
     );
 

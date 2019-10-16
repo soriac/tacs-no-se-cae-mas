@@ -35,7 +35,7 @@ public class RepositoryDAO implements DAO<Repository> {
 
         if (repo.isEmpty()) {
             var foundRepo = GitHubConnect.getInstance().findRepositoryById(id);
-            var localRepo = new Repository(foundRepo.getId() + "", foundRepo.getName());
+            var localRepo = new Repository(foundRepo.getId() + "", foundRepo.getName(), foundRepo.getLanguage());
             this.save(localRepo);
             return localRepo;
         }

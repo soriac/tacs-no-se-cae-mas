@@ -1,7 +1,8 @@
 package org.tacs.grupocuatro.entity;
 
-import java.util.Date;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class User {
 
@@ -64,5 +65,21 @@ public class User {
 
     public void addFavoriteRepo(Repository repository) {
         favoriteRepos.add(repository);
+    }
+
+    public String getFavoriteLanguage() {
+        if (favoriteRepos.size() == 0) {
+            return "";
+        }
+
+        Map<String, Long> languageCountList = favoriteRepos.stream().collect(
+                Collectors.groupingBy(Repository::getLanguage, Collectors.counting()));
+
+        Optional<Map.Entry<String, Long>> maxEntry = languageCountList.entrySet()
+                .stream()
+                .max(Comparator.comparing(Map.Entry::getValue)
+                );
+
+        return maxEntry.get().getKey();
     }
 }
