@@ -82,7 +82,7 @@ export function searchRepos(filters: Filter[]) {
 }
 
 const REPOS_COUNT = (since?: Date) => {
-    if (since) {
+    if (since != undefined) {
         const epoch = Math.floor(since.getTime());
         return `${BASE_URL}/repos/count?since=${epoch}`;
     } else {
@@ -90,8 +90,8 @@ const REPOS_COUNT = (since?: Date) => {
     }
 };
 
-export function reposCount(since: Date) {
-    return fetch(REPOS_COUNT(since), {
+export function reposCount(since: Date, filterByDate: boolean) {
+    return fetch(REPOS_COUNT(filterByDate? since : undefined), {
         method: 'GET',
         headers: {
             'Authorization': `Bearer ${getToken()}`
