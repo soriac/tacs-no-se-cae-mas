@@ -84,7 +84,18 @@ public class UserDAO implements DAO<User> {
 
     @Override
     public void delete(User user) {
-        users.remove(user);
+        Transaction transaction = null;
+        try (var session = HibernateUtil.getSessionFactory().openSession()) {
+            transaction = session.beginTransaction();
+            session.delete(user);
+            transaction.commit();
+            session.close();
+        } catch (Exception ex) {
+            if (transaction != null) {
+                transaction.rollback();
+            }
+            ex.printStackTrace();
+        }
     }
 
     public User findByUser(String username) {

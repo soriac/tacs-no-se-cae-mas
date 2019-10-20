@@ -26,7 +26,7 @@ public class Server {
     public static void main(String[] args) throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException{
 
     	TelegramGHBot bot = TelegramGHBot.getInstance();
-		//bot.start(telegram_webhook + bot.getToken());
+		bot.start(telegram_webhook + bot.getToken());
 
     	crearAdministrador();
     	crearUsuario();

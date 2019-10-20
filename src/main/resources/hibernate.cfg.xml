@@ -7,7 +7,7 @@
         <property name="connection.driver_class">com.mysql.cj.jdbc.Driver</property>
         <property name="connection.url">jdbc:mysql://localhost:3306/no_se_cae_mas?useSSL=false&amp;allowPublicKeyRetrieval=true</property>
         <property name="connection.username">root</property>
-        <property name="connection.password">morena03</property>
+        <property name="connection.password">dev</property>
         <!-- JDBC connection pool settings ... using built-in test pool -->
         <property name="connection.pool_size">15</property>
         <!-- Select our SQL dialect -->
