@@ -13,7 +13,9 @@ import org.tacs.grupocuatro.JsonResponse;
 import org.tacs.grupocuatro.entity.ApplicationRole;
 import org.tacs.grupocuatro.entity.User;
 
+import javax.swing.text.html.Option;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Set;
 
 public class AuthenticationController {
@@ -48,21 +50,23 @@ public class AuthenticationController {
 
     public static void login(Context ctx) {
         var data = ctx.bodyAsClass(AuthenticationPayload.class);
-        var user = UserDAO.getInstance().findByUser(data.getEmail());
+        var userDao = UserDAO.getInstance();
+        User user = userDao.findByUser(data.getEmail());
 
         // no existe el usuario
-        if (user.isEmpty()) {
+            if (user == null) {
             ctx.status(404).json(new JsonResponse("", "User not found, or password is wrong"));
         } else {
-            var result = BCrypt.verifyer().verify(data.getPassword().toCharArray(), user.get().getPassword());
+            var result = BCrypt.verifyer().verify(data.getPassword().toCharArray(), user.getPassword());
             if (!result.verified) {
                 // contraseña incorrecta
                 ctx.status(404).json(new JsonResponse("", "User not found, or password is wrong"));
             } else {
-                user.get().setLastLogin(new Date());
+                user.setLastLogin(new Date());
+                userDao.save(user);
                 var token = JWT.create()
-                        .withClaim("id", user.get().getId())
-                        .withClaim("role", user.get().getRole().toString())
+                        .withClaim("id", user.getId() + "")
+                        .withClaim("role", user.getRole().toString())
                         .sign(algorithm);
 
                 ctx.cookieStore("token", token);
@@ -76,10 +80,10 @@ public class AuthenticationController {
         ctx.status(200).json(new JsonResponse("Logged out!"));
     }
 
-    private static ApplicationRole getUserRole(String id) {
+    private static ApplicationRole getUserRole(long id) {
         var user = UserDAO.getInstance().get(id);
-        if (user.isEmpty()) return ApplicationRole.ANONYMOUS;
-        else return user.get().getRole();
+        if (user == null) return ApplicationRole.ANONYMOUS;
+        else return user.getRole();
     }
 
     public static void handleAuth(Handler handler, Context ctx, Set<Role> permittedRoles) throws Exception {
@@ -103,7 +107,7 @@ public class AuthenticationController {
             var id = result.getClaim("id").asString();
             // mejor que lea el role desde el claim del jwt,
             // pasa que hay que hacer una funcion que haga string -> applicationrole
-            var role = getUserRole(id);
+            var role = getUserRole(Long.parseLong(id));
 
             if (permittedRoles.contains(role)) {
                 ctx.attribute("id", id);

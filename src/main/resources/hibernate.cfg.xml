@@ -9,7 +9,7 @@
         <property name="connection.username">root</property>
         <property name="connection.password">dev</property>
         <!-- JDBC connection pool settings ... using built-in test pool -->
-        <property name="connection.pool_size">1</property>
+        <property name="connection.pool_size">15</property>
         <!-- Select our SQL dialect -->
         <property name="dialect">org.hibernate.dialect.MySQL5Dialect</property>
         <!-- Echo the SQL to stdout -->
@@ -24,5 +24,8 @@
         <property name="hibernate.dbcp.maxIdle">10</property>
         <property name="hibernate.dbcp.minIdle">5</property>
         <property name="hibernate.dbcp.maxWaitMillis">-1</property>
+
+        <mapping class="org.tacs.grupocuatro.entity.User"/>
+        <mapping class="org.tacs.grupocuatro.entity.Repository"/>
     </session-factory>
 </hibernate-configuration>

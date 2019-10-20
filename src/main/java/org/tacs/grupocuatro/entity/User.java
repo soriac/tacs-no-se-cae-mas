@@ -1,25 +1,45 @@
 package org.tacs.grupocuatro.entity;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import org.tacs.grupocuatro.DAO.UserDAO;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "users")
 public class User {
 
-    private String id;
+    @Id
+    @GeneratedValue
+    private long id;
+
+    @Enumerated(EnumType.ORDINAL)
     private ApplicationRole role;
 
     private String email;
     private String password;
 
     private Date lastLogin;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = { CascadeType.ALL })
+    @JoinTable(
+            name = "favorite_repos",
+            joinColumns = { @JoinColumn(name = "user_id") },
+            inverseJoinColumns = { @JoinColumn(name = "repository_id") }
+    )
+    @JsonManagedReference
     private Set<Repository> favoriteRepos;
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -48,7 +68,7 @@ public class User {
     }
 
     public Set<Repository> getFavRepos() {
-        return favoriteRepos;
+        return this.favoriteRepos;
     }
 
     public void setFavRepos(Set<Repository> favRepos) {
@@ -65,6 +85,12 @@ public class User {
 
     public void addFavoriteRepo(Repository repository) {
         favoriteRepos.add(repository);
+        UserDAO.getInstance().update(this);
+    }
+
+    public void removeFavoriteRepo(Repository repository) {
+        favoriteRepos.removeIf(repo -> repo.getId() == repository.getId());
+        UserDAO.getInstance().update(this);
     }
 
     public String getFavoriteLanguage() {

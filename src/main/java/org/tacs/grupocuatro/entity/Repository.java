@@ -1,49 +1,61 @@
 package org.tacs.grupocuatro.entity;
 
-import java.util.Date;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
+import java.util.Set;
+
+import java.util.Date;
+import javax.persistence.*;
+
+@Entity
+@Table(name = "repositories")
 public class Repository {
 
-    private String id;
-    private String name;
-    private Date added;
-    private String language;
+	@Id
+	private long id;
+	private String name;
+	private Date added;
 
-    public Repository(String id, String name, String language) {
-        this.id = id;
-        this.name = name;
-        this.language = language;
-    }
+	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favoriteRepos")
+	@JsonBackReference
+	private Set<User> users;
 
-    public String getId() {
-        return id;
-    }
+	public Repository() {	}
 
-    public void setId(String id) {
-        this.id = id;
-    }
+	public Repository(long id, String name) {
+		this.id = id;
+		this.name = name;
+	}
 
-    public String getName() {
-        return name;
-    }
+	public long getId() {
+		return id;
+	}
 
-    public void setName(String name) {
-        this.name = name;
-    }
+	public void setId(long id) {
+		this.id = id;
+	}
 
-    public Date getAdded() {
-        return added;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setAdded(Date added) {
-        this.added = added;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    public String getLanguage() {
-        return language;
-    }
+	public Date getAdded() {
+		return added;
+	}
 
-    public void setLanguage(String language) {
-        this.language = language;
-    }
+	public void setAdded(Date added) {
+		this.added = added;
+	}
+
+	public Set<User> getUsers() {
+		return users;
+	}
+
+	public void setUsers(Set<User> users) {
+		this.users = users;
+	}
 }
