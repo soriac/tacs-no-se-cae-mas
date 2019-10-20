@@ -50,7 +50,7 @@ public class RepositoryGitHub {
 	}
 	
 	public Repository convertToRepository() {
-		return new Repository(this.id, this.name);
+		return new Repository(this.id, this.name, this.language);
 	}
 	
 }

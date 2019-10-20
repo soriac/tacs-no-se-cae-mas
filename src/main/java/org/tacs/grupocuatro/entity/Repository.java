@@ -15,6 +15,15 @@ public class Repository {
 	private long id;
 	private String name;
 	private Date added;
+	private String language;
+
+	public String getLanguage() {
+		return language;
+	}
+
+	public void setLanguage(String language) {
+		this.language = language;
+	}
 
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy = "favoriteRepos")
 	@JsonBackReference
@@ -22,9 +31,10 @@ public class Repository {
 
 	public Repository() {	}
 
-	public Repository(long id, String name) {
+	public Repository(long id, String name, String language) {
 		this.id = id;
 		this.name = name;
+		this.language = language;
 	}
 
 	public long getId() {

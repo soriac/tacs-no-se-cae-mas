@@ -60,61 +60,57 @@ public class UserController {
     }
 
     public static void compareList(Context ctx) {
-        var list1 = ctx.pathParam("list1").trim().split(",");
-        var list2 = ctx.pathParam("list2").trim().split(",");
+        var list1 = Arrays.asList(ctx.pathParam("list1").trim().split(","));
+        var list2 = Arrays.asList(ctx.pathParam("list2").trim().split(","));
 
-        var repoSet = new HashSet<Repository>();
-        var languageSet = new HashSet<String>();
-
-        var sharedRepos = new HashSet<Repository>();
-        var sharedLanguages = new HashSet<String>();
-
-        for (var userId : list1) {
-            var user = dao.get(userId);
-
-            if (user.isEmpty()){
-                continue;
-            }
-
-            repoSet.addAll(
-                user.get().getFavRepos()
-            );
-
-            languageSet.addAll(
-                user.get().getFavRepos().stream()
-                .map(Repository::getLanguage)
-                .collect(Collectors.toList())
-            );
-        }
-
-        for (var userId : list2) {
-            var user = dao.get(userId);
-
-            if (user.isEmpty()){
-                continue;
-            }
-
-            sharedRepos.addAll(
-                user.get().getFavRepos().stream()
-                .filter(repoSet::contains)
-                .collect(Collectors.toList())
-            );
-
-            sharedLanguages.addAll(
-                user.get().getFavRepos().stream()
-                .map(Repository::getLanguage)
-                .filter(languageSet::contains)
-                .collect(Collectors.toList())
-            );
-
-        }
-
-        ctx.res.setStatus(200);
-        if(sharedLanguages.isEmpty() && sharedRepos.isEmpty()){
-            ctx.json(new JsonResponse("No hay repositorios ni lenguages en común."));
+        if (list1.stream().anyMatch(list2::contains) || list2.stream().anyMatch(list2::contains)) {
+            ctx.status(400).json(new JsonResponse("Las listas deben ser completamente distintas."));
         } else {
-            var data = new UserCompareListData(sharedRepos, sharedLanguages);
-            ctx.json(new JsonResponse("Repositorios y lenguajes en común:").with(data));
+            var repoSet = new HashSet<Repository>();
+            var languageSet = new HashSet<String>();
+
+            var sharedRepos = new HashSet<Repository>();
+            var sharedLanguages = new HashSet<String>();
+
+            for (var userId : list1) {
+                var user = dao.get(Integer.parseInt(userId));
+
+                repoSet.addAll(
+                        user.getFavRepos()
+                );
+
+                languageSet.addAll(
+                        user.getFavRepos().stream()
+                                .map(Repository::getLanguage)
+                                .collect(Collectors.toList())
+                );
+            }
+
+            for (var userId : list2) {
+                var user = dao.get(Integer.parseInt(userId));
+
+                sharedRepos.addAll(
+                        user.getFavRepos().stream()
+                                .filter(repoSet::contains)
+                                .collect(Collectors.toList())
+                );
+
+                sharedLanguages.addAll(
+                        user.getFavRepos().stream()
+                                .map(Repository::getLanguage)
+                                .filter(languageSet::contains)
+                                .collect(Collectors.toList())
+                );
+
+            }
+
+            ctx.res.setStatus(200);
+            if(sharedLanguages.isEmpty() && sharedRepos.isEmpty()){
+                ctx.json(new JsonResponse("No hay repositorios ni lenguages en común."));
+            } else {
+                var data = new UserCompareListData(sharedRepos, sharedLanguages);
+                ctx.json(new JsonResponse("Repositorios y lenguajes en común:").with(data));
+            }
         }
     }
 
