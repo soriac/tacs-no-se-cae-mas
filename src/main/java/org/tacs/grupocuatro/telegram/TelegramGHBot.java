@@ -24,7 +24,7 @@ public class TelegramGHBot {
     
     private TelegramGHBot() throws TelegramTokenNotFoundException{
 
-        String token = System.getenv("GITHUB_TACS_TELEGRAM");
+        String token = "917578385:AAG9xikK4cFmqgnMzqG60657Jr_c9fot5UY";
         
         if (token == null) {
             throw new TelegramTokenNotFoundException();

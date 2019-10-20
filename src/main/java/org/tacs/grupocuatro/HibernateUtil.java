@@ -1,5 +1,7 @@
 package org.tacs.grupocuatro;
 
+import javax.persistence.*;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.Metadata;
 import org.hibernate.boot.MetadataSources;

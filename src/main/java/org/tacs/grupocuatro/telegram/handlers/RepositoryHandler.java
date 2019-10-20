@@ -114,7 +114,7 @@ public class RepositoryHandler extends TelegramHandler{
 		try {
 			
 			String id = update.message().text();
-			RepositoryGitHub repo = GitHubConnect.getInstance().findRepositoryById(id);
+			RepositoryGitHub repo = GitHubConnect.getInstance().findRepositoryById(Long.parseLong(id));
 			
 			String message = "Repositorio encontrado \n"
 					+ "Nombre: " + repo.getName() + "\n"

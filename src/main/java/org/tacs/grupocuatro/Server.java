@@ -10,6 +10,8 @@ import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 import org.tacs.grupocuatro.telegram.TelegramGHBot;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramCannotSetWebhookException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -22,10 +24,10 @@ public class Server {
     public static String telegram_webhook = "https://53af73a8.ngrok.io" + "/bot";
 
     public static void main(String[] args) throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException{
-    	
+
     	TelegramGHBot bot = TelegramGHBot.getInstance();
-		bot.start(telegram_webhook + bot.getToken());
-    	
+		//bot.start(telegram_webhook + bot.getToken());
+
     	crearAdministrador();
     	crearUsuario();
     	
@@ -71,7 +73,6 @@ public class Server {
         admin.setEmail("admin");
         admin.setPassword(BCrypt.withDefaults().hashToString(12, "1234".toCharArray()));
         admin.setRole(ADMIN);
-        admin.setId("1");
         UserDAO.getInstance().save(admin);
     }
     
@@ -80,7 +81,6 @@ public class Server {
     	user.setEmail("prueba");
     	user.setPassword("prueba");
     	user.setRole(USER);
-    	user.setId("2");
         UserDAO.getInstance().save(user);
     }
     

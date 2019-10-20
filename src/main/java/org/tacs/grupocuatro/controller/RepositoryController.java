@@ -95,7 +95,7 @@ public class RepositoryController {
 						.map(repo ->
 								new RepositoryGitHubWithFavCount(
 										repo,
-										RepositoryDAO.getInstance().favCountForId(repo.getId() + "")
+										RepositoryDAO.getInstance().favCountForId(repo.getId())
 								))
 						.toArray();
 
@@ -112,11 +112,11 @@ public class RepositoryController {
     public static void one(Context ctx) {
 		var id = ctx.pathParam("id");
 		try {
-			var ghRepo = GitHubConnect.getInstance().findRepositoryById(id);
+			var ghRepo = GitHubConnect.getInstance().findRepositoryById(Long.parseLong(id));
 			if ("ADMIN".equals(ctx.attribute("role").toString())) {
 				var repoWithFavorites = new RepositoryGitHubWithFavCount(
 						ghRepo,
-						RepositoryDAO.getInstance().favCountForId(ghRepo.getId() + "")
+						RepositoryDAO.getInstance().favCountForId(ghRepo.getId())
 				);
 
 				ctx.status(200).json(new JsonResponse("").with(repoWithFavorites));
