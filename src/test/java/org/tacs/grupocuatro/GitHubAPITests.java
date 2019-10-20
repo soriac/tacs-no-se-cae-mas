@@ -87,7 +87,7 @@ public class GitHubAPITests {
     void getRepoById() throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
     	
 		GitHubConnect conn = GitHubConnect.getInstance();
-		RepositoryGitHub repo = conn.findRepositoryById("20633049");
+		RepositoryGitHub repo = conn.findRepositoryById(20633049);
 		
     	assertNotNull(repo);
     	
@@ -99,7 +99,7 @@ public class GitHubAPITests {
 		GitHubConnect conn = GitHubConnect.getInstance();
     	
 		assertThrows(GitHubRepositoryNotFoundException.class, () ->
-			{conn.findRepositoryById("981938123");
+			{conn.findRepositoryById(981938123);
 		});    
     	
     }

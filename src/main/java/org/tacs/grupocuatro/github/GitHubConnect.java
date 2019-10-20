@@ -71,7 +71,7 @@ public class GitHubConnect {
     
     }
 
-    public RepositoryGitHub findRepositoryById(String id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
+    public RepositoryGitHub findRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
         GitHubRequest request = new GitHubRequest(this.token);
         return request.doRepositoryById(id);
     }

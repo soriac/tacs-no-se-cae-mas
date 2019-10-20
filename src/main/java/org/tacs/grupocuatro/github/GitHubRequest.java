@@ -93,7 +93,7 @@ public class GitHubRequest {
 
 	}
 
-	public RepositoryGitHub doRepositoryById(String id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
+	public RepositoryGitHub doRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
 		
 		HttpClient client = HttpClient.newHttpClient();
 		
