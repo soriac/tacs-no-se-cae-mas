@@ -7,6 +7,9 @@ import org.tacs.grupocuatro.JsonResponse;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 public class UserController {
     private static UserDAO dao = UserDAO.getInstance();
 
@@ -58,6 +61,56 @@ public class UserController {
         }
     }
 
+    public static void compareList(Context ctx) {
+        var list1 = ctx.pathParam("list1").trim().split(",");
+        var list2 = ctx.pathParam("list2").trim().split(",");
+
+        var reposMap = new HashMap<String, Boolean>();
+        var languagesMap = new HashMap<String, Boolean>();
+
+
+        for (var userId : list1) {
+            var user = dao.get(userId);
+
+            if (user.isEmpty()){
+                continue;
+            }
+
+
+            for (var repo : user.get().getFavRepos()) {
+                reposMap.putIfAbsent(repo.getId(), false);
+                languagesMap.putIfAbsent(repo.getLanguage(), false);
+            }
+        }
+
+        for (var userId : list2) {
+            var user = dao.get(userId);
+
+            if (user.isEmpty()){
+                continue;
+            }
+
+            for (var repo : user.get().getFavRepos()) {
+                reposMap.replace(repo.getId(), true);
+                languagesMap.replace(repo.getLanguage(), true);
+            }
+        }
+
+        List<String> sharedRepos = reposMap.entrySet().stream()
+                                    .filter(Map.Entry::getValue)
+                                    .map(Map.Entry::getKey)
+                                    .collect(Collectors.toList());
+
+        List<String> sharedLanguages = languagesMap.entrySet().stream()
+                                    .filter(Map.Entry::getValue)
+                                    .map(Map.Entry::getKey)
+                                    .collect(Collectors.toList());
+
+        ctx.res.setStatus(200);
+        var data = new Data(sharedRepos, sharedLanguages);
+        ctx.json(new JsonResponse("Repositorios y lenguajes en común").with(data));
+    }
+
     public static void favoriteRepos(Context ctx) {
         var id = ctx.attribute("id");
 
@@ -90,9 +143,9 @@ public class UserController {
             e.printStackTrace();
         }
     }
-
     // es exactamente igual a add, pero llama a remove... quizas haya una abstracción acá
     // pasa que molestan mucho los optional y las excpeciones
+
     public static void removeFavoriteRepo(Context ctx) {
         var id = ctx.attribute("id");
         var repoId = ctx.pathParam("repo");
@@ -115,3 +168,4 @@ public class UserController {
         }
     }
 }
+
