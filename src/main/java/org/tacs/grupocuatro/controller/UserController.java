@@ -4,6 +4,8 @@ import io.javalin.http.Context;
 import org.tacs.grupocuatro.DAO.RepositoryDAO;
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.JsonResponse;
+import org.tacs.grupocuatro.entity.UserCompareListData;
+import org.tacs.grupocuatro.entity.Repository;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
 
@@ -65,9 +67,11 @@ public class UserController {
         var list1 = ctx.pathParam("list1").trim().split(",");
         var list2 = ctx.pathParam("list2").trim().split(",");
 
-        var reposMap = new HashMap<String, Boolean>();
-        var languagesMap = new HashMap<String, Boolean>();
+        var repoSet = new HashSet<Repository>();
+        var languageSet = new HashSet<String>();
 
+        var sharedRepos = new HashSet<Repository>();
+        var sharedLanguages = new HashSet<String>();
 
         for (var userId : list1) {
             var user = dao.get(userId);
@@ -76,11 +80,15 @@ public class UserController {
                 continue;
             }
 
+            repoSet.addAll(
+                user.get().getFavRepos()
+            );
 
-            for (var repo : user.get().getFavRepos()) {
-                reposMap.putIfAbsent(repo.getId(), false);
-                languagesMap.putIfAbsent(repo.getLanguage(), false);
-            }
+            languageSet.addAll(
+                user.get().getFavRepos().stream()
+                .map(Repository::getLanguage)
+                .collect(Collectors.toList())
+            );
         }
 
         for (var userId : list2) {
@@ -90,25 +98,28 @@ public class UserController {
                 continue;
             }
 
-            for (var repo : user.get().getFavRepos()) {
-                reposMap.replace(repo.getId(), true);
-                languagesMap.replace(repo.getLanguage(), true);
-            }
+            sharedRepos.addAll(
+                user.get().getFavRepos().stream()
+                .filter(repoSet::contains)
+                .collect(Collectors.toList())
+            );
+
+            sharedLanguages.addAll(
+                user.get().getFavRepos().stream()
+                .map(Repository::getLanguage)
+                .filter(languageSet::contains)
+                .collect(Collectors.toList())
+            );
+
         }
 
-        List<String> sharedRepos = reposMap.entrySet().stream()
-                                    .filter(Map.Entry::getValue)
-                                    .map(Map.Entry::getKey)
-                                    .collect(Collectors.toList());
-
-        List<String> sharedLanguages = languagesMap.entrySet().stream()
-                                    .filter(Map.Entry::getValue)
-                                    .map(Map.Entry::getKey)
-                                    .collect(Collectors.toList());
-
         ctx.res.setStatus(200);
-        var data = new Data(sharedRepos, sharedLanguages);
-        ctx.json(new JsonResponse("Repositorios y lenguajes en común").with(data));
+        if(sharedLanguages.isEmpty() && sharedRepos.isEmpty()){
+            ctx.json(new JsonResponse("No hay repositorios ni lenguages en común."));
+        } else {
+            var data = new UserCompareListData(sharedRepos, sharedLanguages);
+            ctx.json(new JsonResponse("Repositorios y lenguajes en común:").with(data));
+        }
     }
 
     public static void favoriteRepos(Context ctx) {
