@@ -28,25 +28,27 @@ public class Server {
     	TelegramGHBot bot = TelegramGHBot.getInstance();
 		bot.start(telegram_webhook + bot.getToken());
 
-    	crearAdministrador();
-    	crearUsuario();
-    	
+        UserDAO userDao = UserDAO.getInstance();
+
+    	crearAdministrador(userDao);
+    	crearUsuario(userDao);
+
         Javalin app = Javalin.create(JavalinConfig::enableCorsForAllOrigins).start(port);
 
         app.config.accessManager(AuthenticationController::handleAuth);
 
         app.exception(GitHubConnectionException.class, GitHubController::handleConnectionException);
         app.exception(AuthenticationException.class, (e, ctx) -> ctx.status(401).json(new JsonResponse("Unauthorized.")));
-        
+
         app.routes(() -> {
 
             post("/signup", AuthenticationController::signup);
             post("/login", AuthenticationController::login);
             post("/logout", AuthenticationController::logout);
-            
+
             // Telegram Bot
             post("/bot" + bot.getToken(), TelegramController::update);
-            
+
             path("/users", () -> {
                 path("/me", () -> {
                     get(UserController::me, roles(USER, ADMIN));
@@ -69,20 +71,24 @@ public class Server {
         });
     }
 
-    private static void crearAdministrador() {
+    private static void crearAdministrador(UserDAO dao) {
+        if (dao.findByUser("admin") != null)
+            return;
         var admin = new User();
         admin.setEmail("admin");
         admin.setPassword(BCrypt.withDefaults().hashToString(12, "1234".toCharArray()));
         admin.setRole(ADMIN);
-        UserDAO.getInstance().save(admin);
+        dao.save(admin);
     }
-    
-    private static void crearUsuario() {
+
+    private static void crearUsuario(UserDAO dao) {
+        if (dao.findByUser("prueba") != null)
+            return;
     	var user = new User();
     	user.setEmail("prueba");
-    	user.setPassword("prueba");
+    	user.setPassword(BCrypt.withDefaults().hashToString(12, "prueba".toCharArray()));
     	user.setRole(USER);
-        UserDAO.getInstance().save(user);
+        dao.save(user);
     }
     
 }
