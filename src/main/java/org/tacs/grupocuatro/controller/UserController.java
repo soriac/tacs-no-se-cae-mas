@@ -93,7 +93,13 @@ public class UserController {
 
                 sharedRepos.addAll(
                         user.getFavRepos().stream()
-                                .filter(repoSet::contains)
+                                .filter(repo1 -> {
+                                    var match = repoSet.stream()
+                                                        .filter(repo2 -> repo1.getId() == repo2.getId())
+                                                        .collect(Collectors.toList());
+
+                                    return match.size()>0;
+                                })
                                 .collect(Collectors.toList())
                 );
 
