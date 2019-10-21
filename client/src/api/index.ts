@@ -48,7 +48,7 @@ export function oneUser(id: string | undefined) {
     });
 }
 
-const COMPARE = (id1: string, id2: string) => `${BASE_URL}/users/compare/${id1}/${id2}`;
+const COMPARE = (id1: string, id2: string) => `${BASE_URL}/users/compare-list/${id1}/${id2}`;
 
 export function compare(id1: string, id2: string) {
     return fetch(COMPARE(id1, id2), {

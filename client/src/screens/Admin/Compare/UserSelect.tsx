@@ -12,7 +12,7 @@ const renderUser: ItemRenderer<User> = (user, {handleClick, modifiers}) =>
 
 type Props = {
     users: User[]
-    selectedUser?: User
+    selectedUser?: User[]
     setUser: (user: User) => void
 }
 const UserSelect: React.FC<Props> = ({users, selectedUser, setUser}) => {
@@ -25,7 +25,7 @@ const UserSelect: React.FC<Props> = ({users, selectedUser, setUser}) => {
             items={users}
             itemRenderer={renderUser}
             onItemSelect={setUser}>
-            <Button>{selectedUser ? selectedUser.email : 'Select a user'}</Button>
+            <Button icon="add">Add a user</Button>
         </Select>
     );
 

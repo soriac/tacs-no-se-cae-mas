@@ -6,10 +6,11 @@ import {Repo, User} from '../../../api/types';
 import UserSelect from './UserSelect';
 import {ContentContainer} from '../../../components/ContentContainer';
 import {Root} from '../../../components/Root';
+import UserComponent from "../../../components/User";
 
 const ComparatorContainer = styled.div`
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     flex-wrap: nowrap;
     
     & > :not(:last-child) {
@@ -19,32 +20,47 @@ const ComparatorContainer = styled.div`
 
 type Props = {
     users: User[]
-    selectedUsers: [User?, User?]
+    selectedUsers: [User[], User[]]
     repos: Repo[]
+    languages: String[]
     loadingUsers: boolean
     loadingComparison: boolean
     setUser: (n: number) => (user: User) => void
 }
 
-const Layout: React.FC<Props> = ({users, loadingUsers, selectedUsers, loadingComparison, repos, setUser}) => {
+const Layout: React.FC<Props> = ({users, loadingUsers, selectedUsers, loadingComparison, repos, languages, setUser}) => {
     return (
         <Root>
             <ContentContainer>
-                <h2>Compare favorite repositories</h2>
+                <h2>Compare favorite repositories and languages</h2>
                 {
                     loadingUsers ?
                         <Spinner/>
                         :
                         <>
                             <ComparatorContainer>
+                                <h3>Lista 1</h3>
+                                {selectedUsers[0].map(user => <UserComponent user={user}/>)}
                                 <UserSelect users={users} setUser={setUser(0)} selectedUser={selectedUsers[0]}/>
+                            </ComparatorContainer>
+                            <ComparatorContainer>
+                                <h3>Lista 2</h3>
+                                {selectedUsers[1].map(user => <UserComponent user={user}/>)}
                                 <UserSelect users={users} setUser={setUser(1)} selectedUser={selectedUsers[1]}/>
                             </ComparatorContainer>
+                            <h4>Shared repos</h4>
                             {
                                 loadingComparison ?
                                     <Spinner/>
                                     :
                                     repos.map(repo => <Repository repo={repo}/>)
+                            }
+                            <h4>Shared languages</h4>
+                            {
+                                loadingComparison ?
+                                    <p></p>
+                                :
+                                    <p>{languages.join(", ")}</p>
                             }
                         </>
                 }

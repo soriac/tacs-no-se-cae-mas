@@ -63,7 +63,9 @@ public class UserController {
         var list1 = Arrays.asList(ctx.pathParam("list1").trim().split(","));
         var list2 = Arrays.asList(ctx.pathParam("list2").trim().split(","));
 
-        if (list1.stream().anyMatch(list2::contains) || list2.stream().anyMatch(list2::contains)) {
+        List<String> repeated = new LinkedList<String>(list1);
+        repeated.retainAll(list2);
+        if (repeated.size()>0) {
             ctx.status(400).json(new JsonResponse("Las listas deben ser completamente distintas."));
         } else {
             var repoSet = new HashSet<Repository>();
