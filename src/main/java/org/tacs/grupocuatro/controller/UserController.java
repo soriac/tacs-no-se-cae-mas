@@ -4,8 +4,13 @@ import io.javalin.http.Context;
 import org.tacs.grupocuatro.DAO.RepositoryDAO;
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.JsonResponse;
+import org.tacs.grupocuatro.entity.UserCompareListData;
+import org.tacs.grupocuatro.entity.Repository;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class UserController {
     private static UserDAO dao = UserDAO.getInstance();
@@ -54,6 +59,69 @@ public class UserController {
         }
     }
 
+    public static void compareList(Context ctx) {
+        var list1 = Arrays.asList(ctx.pathParam("list1").trim().split(","));
+        var list2 = Arrays.asList(ctx.pathParam("list2").trim().split(","));
+
+        List<String> repeated = new LinkedList<String>(list1);
+        repeated.retainAll(list2);
+        if (repeated.size()>0) {
+            ctx.status(400).json(new JsonResponse("Las listas deben ser completamente distintas."));
+        } else {
+            var repoSet = new HashSet<Repository>();
+            var languageSet = new HashSet<String>();
+
+            var sharedRepos = new HashSet<Repository>();
+            var sharedLanguages = new HashSet<String>();
+
+            for (var userId : list1) {
+                var user = dao.get(Integer.parseInt(userId));
+
+                repoSet.addAll(
+                        user.getFavRepos()
+                );
+
+                languageSet.addAll(
+                        user.getFavRepos().stream()
+                                .map(Repository::getLanguage)
+                                .collect(Collectors.toList())
+                );
+            }
+
+            for (var userId : list2) {
+                var user = dao.get(Integer.parseInt(userId));
+
+                sharedRepos.addAll(
+                        user.getFavRepos().stream()
+                                .filter(repo1 -> {
+                                    var match = repoSet.stream()
+                                                        .filter(repo2 -> repo1.getId() == repo2.getId())
+                                                        .collect(Collectors.toList());
+
+                                    return match.size()>0;
+                                })
+                                .collect(Collectors.toList())
+                );
+
+                sharedLanguages.addAll(
+                        user.getFavRepos().stream()
+                                .map(Repository::getLanguage)
+                                .filter(languageSet::contains)
+                                .collect(Collectors.toList())
+                );
+
+            }
+
+            ctx.res.setStatus(200);
+            if(sharedLanguages.isEmpty() && sharedRepos.isEmpty()){
+                ctx.json(new JsonResponse("No hay repositorios ni lenguages en común."));
+            } else {
+                var data = new UserCompareListData(sharedRepos, sharedLanguages);
+                ctx.json(new JsonResponse("Repositorios y lenguajes en común:").with(data));
+            }
+        }
+    }
+
     public static void favoriteRepos(Context ctx) {
         var id = Long.parseLong(ctx.attribute("id"));
 
@@ -86,9 +154,9 @@ public class UserController {
             e.printStackTrace();
         }
     }
-
     // es exactamente igual a add, pero llama a remove... quizas haya una abstracción acá
     // pasa que molestan mucho los optional y las excpeciones
+
     public static void removeFavoriteRepo(Context ctx) {
         long id = Long.parseLong(ctx.attribute("id"));
         var repoId = ctx.pathParam("repo");
@@ -111,3 +179,4 @@ public class UserController {
         }
     }
 }
+

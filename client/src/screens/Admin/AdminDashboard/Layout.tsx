@@ -1,9 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import {Card, Spinner} from '@blueprintjs/core';
+import {Card, Spinner, Switch} from '@blueprintjs/core';
 import {DatePicker} from '@blueprintjs/datetime';
 import {Root} from '../../../components/Root';
 import {ContentContainer} from '../../../components/ContentContainer';
+import {ToggleableFilter} from "../RepoSearch";
 
 const TextContainer = styled.div`
     margin-bottom: 0;
@@ -22,16 +23,21 @@ type Props = {
     setDate: (d: Date) => void
     repoCount: number | undefined
     loading: boolean
+    dateFilterEnabled: boolean
+    setDateFilterEnabled: (dateFilterEnabled: boolean) => void
 }
-const Layout: React.FC<Props> = ({date, setDate, repoCount, loading}) => {
+
+const Layout: React.FC<Props> = ({date, setDate, repoCount, loading, dateFilterEnabled, setDateFilterEnabled}) => {
+    const toggleEnabled = () => setDateFilterEnabled(!dateFilterEnabled);
 
     return (
         <Root>
             <ContentContainer>
                 <h2>Repository Count</h2>
-                <Card>
+                <Switch checked={dateFilterEnabled} onChange={toggleEnabled} label={"Filter by date:"}/>
+                <Card hidden={!dateFilterEnabled}>
                     <DatePicker
-                        value={date}
+                        value={dateFilterEnabled ? date : undefined}
                         onChange={setDate}
                         modifiers={{}}/>
                 </Card>
@@ -40,7 +46,8 @@ const Layout: React.FC<Props> = ({date, setDate, repoCount, loading}) => {
                         <Spinner/>
                         : (repoCount === 0 || !!repoCount) ?
                         <TextContainer>
-                            <p>Repos in system since {date.getFullYear()}-{date.getMonth() + 1}-{date.getDate()}:</p>
+                            <p hidden={!dateFilterEnabled}>Repos in system <strong>since {date.getFullYear()}-{date.getMonth() + 1}-{date.getDate()}</strong>:</p>
+                            <p hidden={dateFilterEnabled}>Total repos in system:</p>
                             <Large>{repoCount}</Large>
                         </TextContainer>
                         : null

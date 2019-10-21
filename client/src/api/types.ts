@@ -10,6 +10,7 @@ export type User = {
     email: string
     lastLogin: number
     favRepos: Repo[]
+    favoriteLanguage: string
 }
 
 export type MePayload = {

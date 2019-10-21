@@ -4,10 +4,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.tacs.grupocuatro.DAO.UserDAO;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 import javax.persistence.*;
 
 @Entity
@@ -91,5 +89,21 @@ public class User {
     public void removeFavoriteRepo(Repository repository) {
         favoriteRepos.removeIf(repo -> repo.getId() == repository.getId());
         UserDAO.getInstance().update(this);
+    }
+
+    public String getFavoriteLanguage() {
+        if (favoriteRepos == null || favoriteRepos.size() == 0) {
+            return "";
+        }
+
+        Map<String, Long> languageCountList = favoriteRepos.stream().collect(
+                Collectors.groupingBy(Repository::getLanguage, Collectors.counting()));
+
+        Optional<Map.Entry<String, Long>> maxEntry = languageCountList.entrySet()
+                .stream()
+                .max(Comparator.comparing(Map.Entry::getValue)
+                );
+
+        return maxEntry.get().getKey();
     }
 }

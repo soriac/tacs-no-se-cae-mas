@@ -21,7 +21,7 @@ import static org.tacs.grupocuatro.entity.ApplicationRole.USER;
 public class Server {
 	
     public static int port = 8080;
-    public static String telegram_webhook = "https://53af73a8.ngrok.io" + "/bot";
+    public static String telegram_webhook = "https://b07b8670.ngrok.io" + "/bot";
 
     public static void main(String[] args) throws TelegramTokenNotFoundException, TelegramCannotSetWebhookException{
 
@@ -59,6 +59,7 @@ public class Server {
 
                 get(UserController::all, roles(ADMIN));
                 get("/compare/:id1/:id2", UserController::compareFavorites, roles(ADMIN));
+                get("/compare-list/:list1/:list2", UserController::compareList, roles(ADMIN));
                 get("/:id", UserController::one, roles(ADMIN));
             });
 
