@@ -103,7 +103,9 @@ public class RepositoryDAO implements DAO<Repository> {
         return UserDAO.getInstance()
                 .getAll()
                 .stream()
-                .filter(u -> u.getFavRepos().contains(repo.get()))
+                .filter(u -> u.getFavRepos()
+                    .stream()
+                    .anyMatch(x -> x.getId() == repo.get().getId()))
                 .count();
     }
 }
