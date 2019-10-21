@@ -92,7 +92,7 @@ public class User {
     }
 
     public String getFavoriteLanguage() {
-        if (favoriteRepos.size() == 0) {
+        if (favoriteRepos == null || favoriteRepos.size() == 0) {
             return "";
         }
 

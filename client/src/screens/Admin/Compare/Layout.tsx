@@ -48,20 +48,13 @@ const Layout: React.FC<Props> = ({users, loadingUsers, selectedUsers, loadingCom
                                 {selectedUsers[1].map(user => <UserComponent user={user}/>)}
                                 <UserSelect users={users} setUser={setUser(1)} selectedUser={selectedUsers[1]}/>
                             </ComparatorContainer>
-                            <h4>Shared repos</h4>
+                            {loadingComparison ? <Spinner/> : <p></p>}
+                            <h4 hidden={loadingComparison}>Shared repos</h4>
                             {
-                                loadingComparison ?
-                                    <Spinner/>
-                                    :
-                                    repos.map(repo => <Repository repo={repo}/>)
+                                repos.map(repo => <Repository repo={repo}/>)
                             }
-                            <h4>Shared languages</h4>
-                            {
-                                loadingComparison ?
-                                    <p></p>
-                                :
-                                    <p>{languages.join(", ")}</p>
-                            }
+                            <h4 hidden={loadingComparison}>Shared languages</h4>
+                            <p hidden={loadingComparison}>{languages.join(", ")}</p>
                         </>
                 }
             </ContentContainer>
