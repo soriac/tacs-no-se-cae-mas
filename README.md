@@ -2,6 +2,9 @@
 ## Docs
 https://documenter.getpostman.com/view/5724831/SVfUq5rY
 
+## Variables de entorno
+Ver en el archivo `run.sh` de la carpeta `deploy/`
+
 ## Buildear .jar y correr
 ```shell script
 mvn clean compile package

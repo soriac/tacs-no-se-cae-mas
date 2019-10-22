@@ -16,7 +16,18 @@ public class HibernateUtil {
         if (sessionFactory == null) {
             try {
                 // Create registry
-                registry = new StandardServiceRegistryBuilder().configure().build();
+                var configuration = new StandardServiceRegistryBuilder().configure();
+
+                // Get db config
+                String url = System.getenv("DB_URL");
+                String user = System.getenv("DB_USER");
+                String pass = System.getenv("DB_PASS");
+
+                configuration.applySetting("hibernate.connection.url", url);
+                configuration.applySetting("hibernate.connection.username", user);
+                configuration.applySetting("hibernate.connection.password", pass);
+
+                registry = configuration.build();
 
                 // Create MetadataSources
                 MetadataSources sources = new MetadataSources(registry);

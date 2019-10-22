@@ -15,7 +15,7 @@ public class Repository {
 	private long id;
 	private String name;
 	private Date added;
-	private String language;
+	private String language = "NONE";
 
 	public String getLanguage() {
 		return language;

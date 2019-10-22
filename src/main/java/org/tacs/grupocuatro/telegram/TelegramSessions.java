@@ -33,9 +33,8 @@ public class TelegramSessions {
 	
 	public void connect() {
 		
-		Jedis redisDB = new Jedis("redis-13828.c82.us-east-1-2.ec2.cloud.redislabs.com", 13828);
+		Jedis redisDB = new Jedis(System.getenv("GITHUB_TACS_REDIS_URL"), Integer.parseInt(System.getenv("GITHUB_TACS_REDIS_PORT")));
 		redisDB.connect();
-		redisDB.auth("tacs");
 		redisDB.flushAll();
 		this.redisDB = redisDB;
 		
