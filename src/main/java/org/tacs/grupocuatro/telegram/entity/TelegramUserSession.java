@@ -1,4 +1,4 @@
-package org.tacs.grupocuatro.telegram;
+package org.tacs.grupocuatro.telegram.entity;
 
 import org.tacs.grupocuatro.entity.User;
 

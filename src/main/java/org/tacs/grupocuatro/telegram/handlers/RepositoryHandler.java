@@ -4,8 +4,8 @@ import org.tacs.grupocuatro.github.GitHubConnect;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
-import org.tacs.grupocuatro.telegram.TelegramUserSession;
-import org.tacs.grupocuatro.telegram.TelegramUserSession.SessionState;
+import org.tacs.grupocuatro.telegram.entity.TelegramUserSession;
+import org.tacs.grupocuatro.telegram.entity.TelegramUserSession.SessionState;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
@@ -69,9 +69,8 @@ public class RepositoryHandler extends TelegramHandler{
 				.resizeKeyboard(true)
 				.selective(true);
 		
-		req = new SendMessage(update.message().chat().id(), "Por favor seleccione una opcion del menu").replyMarkup(keyboard);
 		sessions.modStateSession(chatId, SessionState.MENU_REPOSITORIO);
-			
+		req = new SendMessage(update.message().chat().id(), "Por favor seleccione una opcion del menu").replyMarkup(keyboard);
     	bot.getTGBot().execute(req);
 		
 	}
@@ -81,7 +80,6 @@ public class RepositoryHandler extends TelegramHandler{
 		long chatId = update.message().chat().id();
 		
 		sessions.modStateSession(chatId, SessionState.REPOSITORIO_ID);
-		
 		SendMessage req = new SendMessage(update.message().chat().id(), "Por favor ingrese el id del repositorio");
 		bot.getTGBot().execute(req);
 
@@ -92,7 +90,6 @@ public class RepositoryHandler extends TelegramHandler{
 		long chatId = update.message().chat().id();
 		
 		sessions.modStateSession(chatId, SessionState.REPOSITORIO_NOMBRE);
-		
 		SendMessage req = new SendMessage(update.message().chat().id(), "Por favor ingrese el id del repositorio");
 		bot.getTGBot().execute(req);
 		
@@ -103,15 +100,17 @@ public class RepositoryHandler extends TelegramHandler{
 		long chatId = update.message().chat().id();
 		
 		sessions.modStateSession(chatId, SessionState.MENU_REPOSITORIO);
-		
 		SendMessage req = new SendMessage(update.message().chat().id(), "Por favor ingrese el id del repositorio");
 		bot.getTGBot().execute(req);
 	
 	}
 	
 	private void buscarRepoId(Update update) {
-				
+		
+		long chatId = update.message().chat().id();
+		
 		try {
+			
 			
 			String id = update.message().text();
 			RepositoryGitHub repo = GitHubConnect.getInstance().findRepositoryById(Long.parseLong(id));
@@ -122,28 +121,34 @@ public class RepositoryHandler extends TelegramHandler{
 					+ "\ud83c\udf74: " + repo.getNumForks() + "\n"
 					+ "Lenguaje:" + repo.getLanguage();
 			
-			SendMessage req = new SendMessage(update.message().chat().id(), message);
+			sessions.modStateSession(chatId, SessionState.PRINCIPAL);
+			SendMessage req = new SendMessage(chatId, message);
 			bot.getTGBot().execute(req);
-
+			
 		} catch (NumberFormatException e) {
-			SendMessage req = new SendMessage(update.message().chat().id(), "Eso no es un numero, intentelo nuevamente.");
+			sessions.modStateSession(chatId, SessionState.PRINCIPAL);
+			SendMessage req = new SendMessage(chatId, "Eso no es un numero, intentelo nuevamente.");
 			bot.getTGBot().execute(req);
 		} catch (GitHubRequestLimitExceededException e) {
-			SendMessage req = new SendMessage(update.message().chat().id(), "Me quede sin requests. Vuelve a intentarlo proximamente");
+			sessions.modStateSession(chatId, SessionState.MENU_REPOSITORIO);
+			SendMessage req = new SendMessage(chatId, "Me quede sin requests. Vuelve a intentarlo proximamente");
 			bot.getTGBot().execute(req);
 		} catch (GitHubRepositoryNotFoundException e) {
-			SendMessage req = new SendMessage(update.message().chat().id(), "No encontre un repositorio con ese id");
+			sessions.modStateSession(chatId, SessionState.MENU_REPOSITORIO);
+			SendMessage req = new SendMessage(chatId, "No encontre un repositorio con ese id");
 			bot.getTGBot().execute(req);
 		}
-		
 		
 	}
 	
 	private void buscarRepoNombre(Update update) {
 		
-		SendMessage req = new SendMessage(update.message().chat().id(), "Proximamente");
-		bot.getTGBot().execute(req);
+		long chatId = update.message().chat().id();
 		
+		sessions.modStateSession(chatId, SessionState.MENU_REPOSITORIO);
+		SendMessage req = new SendMessage(chatId, "Proximamente");
+		bot.getTGBot().execute(req);
+
 	}
 	
 }

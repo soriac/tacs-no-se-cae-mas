@@ -17,7 +17,6 @@ public class UserDAO implements DAO<User> {
 
     private static EntityManagerFactory emf;
 
-
     public static UserDAO getInstance() {
         if (instance == null) {
             instance = new UserDAO();
@@ -108,8 +107,13 @@ public class UserDAO implements DAO<User> {
         return user;
     }
     
+    // Metodo momentaneo para probar redis
     public Optional<User> findUser(String email, String password){
-    	return users.stream().filter(u -> u.getEmail().equals(email) && u.getPassword().equals(password)).findFirst();
+    	User user = new User();
+    	user.setEmail("prueba");
+    	user.setPassword("prueba");
+    	return Optional.ofNullable(user);
+    	//return users.stream().filter(u -> u.getEmail().equals(email) && u.getPassword().equals(password)).findFirst();
     }
 
     public List<Repository> getFavoriteRepos(User user) {

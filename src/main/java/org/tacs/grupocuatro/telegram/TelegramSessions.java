@@ -5,12 +5,19 @@ import java.util.List;
 import java.util.Optional;
 
 import org.tacs.grupocuatro.entity.User;
-import org.tacs.grupocuatro.telegram.TelegramUserSession.SessionState;
+import org.tacs.grupocuatro.telegram.entity.TelegramUserSession;
+import org.tacs.grupocuatro.telegram.entity.TelegramUserSession.SessionState;
+
+import com.google.gson.Gson;
+
+import redis.clients.jedis.Jedis;
 
 public class TelegramSessions {
 	
 	private static TelegramSessions instance;
+	private static Gson gson = new Gson();
 	private List<TelegramUserSession> users = new ArrayList<TelegramUserSession>();
+	private Jedis redisDB;
 	
 	private TelegramSessions() {
 		super();	
@@ -19,28 +26,46 @@ public class TelegramSessions {
 	public static TelegramSessions getInstance() {
         if (instance == null) {
             instance = new TelegramSessions();
+            instance.connect();
         }
         return instance;
     }
 	
-	
-	public TelegramUserSession createSession(User user, long chatId) {
-		TelegramUserSession userSession = new TelegramUserSession(user,chatId);
-		this.users.add(userSession);
-		return userSession;
+	public void connect() {
+		
+		Jedis redisDB = new Jedis("redis-13828.c82.us-east-1-2.ec2.cloud.redislabs.com", 13828);
+		redisDB.connect();
+		redisDB.auth("tacs");
+		redisDB.flushAll();
+		this.redisDB = redisDB;
+		
 	}
 	
-	public void removeSession(TelegramUserSession user) {
-		this.users.remove(user);
+	public TelegramUserSession createSession(User user, long chatId) {
+		
+		TelegramUserSession userSession = new TelegramUserSession(user,chatId);
+		redisDB.set(Long.toString(chatId),gson.toJson(userSession));
+		return userSession;
+	
+	}
+	
+	public void removeSession(long chatId) {
+		redisDB.del(Long.toString(chatId));
 	}
 	
 	public Optional<TelegramUserSession> getSessionByChatId(long chatId) {
-		return users.stream().filter(u -> u.chatId == chatId).findFirst();
+		
+		TelegramUserSession session = gson.fromJson(redisDB.get(Long.toString(chatId)), TelegramUserSession.class);
+		return Optional.ofNullable(session);
+	
 	}
 	
 	public void modStateSession(long chatId, SessionState state) {
-		TelegramUserSession session = users.stream().filter(u -> u.chatId == chatId).findFirst().get();
+		
+		TelegramUserSession session = gson.fromJson(redisDB.get(Long.toString(chatId)), TelegramUserSession.class);
 		session.state = state;
+		redisDB.set(Long.toString(chatId),gson.toJson(session));
+
 	}
 	
 }

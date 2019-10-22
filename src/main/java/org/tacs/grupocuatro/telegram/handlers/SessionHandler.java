@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import org.tacs.grupocuatro.DAO.UserDAO;
 import org.tacs.grupocuatro.entity.User;
-import org.tacs.grupocuatro.telegram.TelegramUserSession;
+import org.tacs.grupocuatro.telegram.entity.TelegramUserSession;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
 
@@ -100,7 +100,7 @@ public class SessionHandler extends TelegramHandler {
 		    	
 			} else {
 				
-				sessions.removeSession(userSession.get());
+				sessions.removeSession(chatId);
 				SendMessage req = new SendMessage(chatId, "Te has deslogueado");
 		    	bot.getTGBot().execute(req);
 								
