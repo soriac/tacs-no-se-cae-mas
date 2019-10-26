@@ -99,6 +99,17 @@ export function reposCount(since: Date, filterByDate: boolean) {
     });
 }
 
+const GET_CONTRIBUTORS = (id: string) => `${BASE_URL}/repos/${id}/contributors`;
+
+export function getContributorsOfRepo(id: string) {
+    return fetch(GET_CONTRIBUTORS(id), {
+        method: 'GET', 
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    })
+}
+
 const MY_REPOS = () => `${BASE_URL}/users/me/favorites`;
 
 export function myRepos() {

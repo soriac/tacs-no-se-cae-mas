@@ -29,7 +29,4 @@ public class DefaultHandler extends TelegramHandler {
     	bot.getTGBot().execute(req);
     	
 	}
-
-	
-	
 }

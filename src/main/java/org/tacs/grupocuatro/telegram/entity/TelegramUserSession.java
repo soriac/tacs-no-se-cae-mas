@@ -12,7 +12,8 @@ public class TelegramUserSession {
 		PRINCIPAL,
 		MENU_REPOSITORIO,
 		REPOSITORIO_NOMBRE,
-		REPOSITORIO_ID
+		REPOSITORIO_ID,
+		REPOSITORIO_ID_CONTRIBUTORS
 	};
 	
 	public TelegramUserSession(User user, long chatId) {

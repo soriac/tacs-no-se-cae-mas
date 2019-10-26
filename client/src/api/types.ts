@@ -29,6 +29,14 @@ export type Repo = {
     added: number | undefined 
 }
 
+export type ContributorGithub = {
+    id: number;
+    login: string;
+    avatarUrl: string;
+    htmlUrl: string;
+    contributions: number;
+}
+
 export type Parameter = 'forks' | 'stars' | 'size' | 'topics' | 'followers'
 export type Operator = 'gt' | 'geq' | 'lt' | 'leq'
 export type Filter = {

@@ -74,13 +74,14 @@ public class TelegramGHBot {
     }
     
     public void setHandlers() throws TelegramTokenNotFoundException {
-    	
-    	TelegramHandler telegramHandler = new SessionHandler();
-    	telegramHandler
-    				.linkNext(new RepositoryHandler())
-    				.linkNext(new PingHandler())
-    				.linkNext(new DefaultHandler());
-    	
+
+        TelegramHandler telegramHandler = new SessionHandler();
+        telegramHandler
+                .linkNext(new RepositoryHandler())
+                .linkNext(new ContributorHandler())
+                .linkNext(new PingHandler())
+                .linkNext(new DefaultHandler());
+
     	this.handler = telegramHandler;
     	
     }
