@@ -18,7 +18,7 @@ public class Repository {
 	private String language = "NONE";
 
 	public String getLanguage() {
-		return language;
+		return language == null ? "NONE" : language;
 	}
 
 	public void setLanguage(String language) {

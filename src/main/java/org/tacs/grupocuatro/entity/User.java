@@ -99,6 +99,8 @@ public class User {
         Map<String, Long> languageCountList = favoriteRepos.stream().collect(
                 Collectors.groupingBy(Repository::getLanguage, Collectors.counting()));
 
+        languageCountList.replace("NONE", 0L);
+
         Optional<Map.Entry<String, Long>> maxEntry = languageCountList.entrySet()
                 .stream()
                 .max(Comparator.comparing(Map.Entry::getValue)
