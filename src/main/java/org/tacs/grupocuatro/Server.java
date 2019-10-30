@@ -66,7 +66,7 @@ public class Server {
                 get("/count", RepositoryController::count, roles(ADMIN));
                 get("/:id", RepositoryController::one, roles(USER, ADMIN));
 
-                get("/:author/:name/commits", RepositoryController::commits);
+                get("/:author/:name/commits", RepositoryController::commits, roles(USER, ADMIN));
             });
         });
     }

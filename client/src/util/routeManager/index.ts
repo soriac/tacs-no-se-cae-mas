@@ -10,6 +10,7 @@ import Users from '../../screens/Admin/Users';
 import Compare from '../../screens/Admin/Compare';
 import {Role} from '../../api/types';
 import Signup from '../../screens/Signup';
+import Commits from '../../screens/User/RepoCommits';
 
 // isScreen is true when a route should show up in navigation bars
 type Route = {
@@ -72,6 +73,13 @@ const routes: Category[] = [
                 isScreen: true,
                 icon: 'list',
                 Screen: MyRepos
+            },
+            {
+                name: 'Commits',
+                path: '/commits',
+                isScreen: true,
+                icon: 'list',
+                Screen: Commits
             }
 
         ]

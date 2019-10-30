@@ -142,3 +142,15 @@ export function removeFromFavorites(id: string) {
         }
     });
 }
+
+const COMMITS = (author: string, name: string) => `${BASE_URL}/repos/${author}/${name}/commits`;
+
+export function getCommitsForRepo(author: string, name: string) {
+    console.log(getToken());
+    return fetch(COMMITS(author, name), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}

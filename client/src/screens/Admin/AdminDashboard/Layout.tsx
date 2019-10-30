@@ -4,7 +4,6 @@ import {Card, Spinner, Switch} from '@blueprintjs/core';
 import {DatePicker} from '@blueprintjs/datetime';
 import {Root} from '../../../components/Root';
 import {ContentContainer} from '../../../components/ContentContainer';
-import {ToggleableFilter} from "../RepoSearch";
 
 const TextContainer = styled.div`
     margin-bottom: 0;

@@ -42,3 +42,12 @@ export type SearchReposPayload = {
     error: string | null
     data: Repo[]
 }
+
+export type Commit = {
+    sha: string
+    message: string
+    url: string
+    date: string
+    authorName: string
+    authorEmail: string
+}
