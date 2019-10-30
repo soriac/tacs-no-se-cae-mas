@@ -66,17 +66,5 @@ public class RepositoryCommit {
     public void setAuthorEmail(String authorEmail) {
         this.authorEmail = authorEmail;
     }
-
-    @Override
-    public String toString() {
-        return "RepositoryCommit{" +
-                "sha='" + sha + '\'' +
-                ", message='" + message + '\'' +
-                ", url='" + url + '\'' +
-                ", date='" + date + '\'' +
-                ", authorName='" + authorName + '\'' +
-                ", authorEmail='" + authorEmail + '\'' +
-                '}';
-    }
 }
 

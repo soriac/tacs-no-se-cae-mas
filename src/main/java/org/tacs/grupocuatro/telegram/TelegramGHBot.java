@@ -1,17 +1,15 @@
 package org.tacs.grupocuatro.telegram;
 
 
-import org.tacs.grupocuatro.telegram.exceptions.*;
-import org.tacs.grupocuatro.telegram.handlers.*;
-
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Message;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.request.AnswerCallbackQuery;
-import com.pengrad.telegrambot.request.SendMessage;
 import com.pengrad.telegrambot.request.SetWebhook;
 import com.pengrad.telegrambot.response.BaseResponse;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramCannotSetWebhookException;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
+import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
+import org.tacs.grupocuatro.telegram.handlers.*;
 
 public class TelegramGHBot {
 
@@ -64,8 +62,8 @@ public class TelegramGHBot {
     	    	
     	SetWebhook request = new SetWebhook()
     			.url(this.webhook);
-    	
-    	BaseResponse resp = this.bot.execute(request);
+
+        BaseResponse resp = this.bot.execute(request);
     	
     	if(!resp.isOk()) {
     		throw new TelegramCannotSetWebhookException(resp.description());
