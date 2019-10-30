@@ -75,11 +75,12 @@ public class TelegramGHBot {
     	
     	TelegramHandler telegramHandler = new SessionHandler();
     	telegramHandler
+                .linkNext(new CommitHandler())
     				.linkNext(new RepositoryHandler())
     				.linkNext(new PingHandler())
     				.linkNext(new DefaultHandler());
-    	
-    	this.handler = telegramHandler;
+
+        this.handler = telegramHandler;
     	
     }
     

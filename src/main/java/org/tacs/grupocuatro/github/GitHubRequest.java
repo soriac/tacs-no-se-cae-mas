@@ -144,7 +144,6 @@ public class GitHubRequest {
 
 		try {
 			var path = String.format("repos/%s/%s/commits", author, name);
-			System.out.println(path);
 			var request = this.httpRequestBuilder()
 					.uri(new URI(GITHUB_API + path))
 					.GET()
