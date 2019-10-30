@@ -1,16 +1,14 @@
 package org.tacs.grupocuatro.telegram;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import com.google.gson.Gson;
 import org.tacs.grupocuatro.entity.User;
 import org.tacs.grupocuatro.telegram.entity.TelegramUserSession;
 import org.tacs.grupocuatro.telegram.entity.TelegramUserSession.SessionState;
-
-import com.google.gson.Gson;
-
 import redis.clients.jedis.Jedis;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class TelegramSessions {
 	
@@ -32,8 +30,10 @@ public class TelegramSessions {
     }
 	
 	public void connect() {
-		
-		Jedis redisDB = new Jedis(System.getenv("GITHUB_TACS_REDIS_URL"), Integer.parseInt(System.getenv("GITHUB_TACS_REDIS_PORT")));
+		String url = System.getenv("GITHUB_TACS_REDIS_URL");
+		int port = Integer.parseInt(System.getenv("GITHUB_TACS_REDIS_PORT"));
+
+		Jedis redisDB = new Jedis(url, port);
 		redisDB.connect();
 		redisDB.flushAll();
 		this.redisDB = redisDB;

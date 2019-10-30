@@ -1,7 +1,10 @@
 package org.tacs.grupocuatro.github;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
+import org.tacs.grupocuatro.github.entity.RepositoryCommit;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
 import org.tacs.grupocuatro.github.exceptions.GitHubRequestLimitExceededException;
@@ -13,7 +16,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpRequest.Builder;
 import java.net.http.HttpResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -28,8 +33,7 @@ public class GitHubRequest {
 	public GitHubRequest(String _token) {
 		this.token = _token;
 	}
-	
-	
+
 	public int doTest() {
 		
 		HttpClient client = HttpClient.newHttpClient();
@@ -133,6 +137,52 @@ public class GitHubRequest {
 		return null;
 		
 		
+	}
+
+	public List<RepositoryCommit> getRepositoryWithCommits(String author, String name) {
+		var client = HttpClient.newHttpClient();
+
+		try {
+			var path = String.format("repos/%s/%s/commits", author, name);
+			System.out.println(path);
+			var request = this.httpRequestBuilder()
+					.uri(new URI(GITHUB_API + path))
+					.GET()
+					.build();
+
+			var response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+			JSONArray rawCommits = new JSONArray(response.body());
+			List<RepositoryCommit> commits = new ArrayList<>();
+
+			var limite = Math.min(10, rawCommits.length());
+
+			// JSONArray no tiene stream????
+			for (int i = 0; i < limite; i++) {
+				var info = rawCommits.getJSONObject(i);
+				var commit = info.getJSONObject("commit");
+				var authorInfo = commit.getJSONObject("author");
+
+				var sha = info.getString("sha");
+				var message = commit.getString("message");
+				var url = info.getString("html_url");
+
+				var date = authorInfo.getString("date");
+
+				var authorName = authorInfo.getString("name");
+				var authorEmail = authorInfo.getString("email");
+
+				commits.add(new RepositoryCommit(sha, message, url, date, authorName, authorEmail));
+			}
+
+			return commits;
+		} catch (URISyntaxException | JSONException e) {
+			// si tira jsonexception es porque me dio un objeto en vez de un array
+			// esto pasa porque no existe el repositorio, entonces puedo tirar este error
+			throw new RuntimeException("Invalid user or repo name.");
+		} catch (InterruptedException | IOException e) {
+			throw new RuntimeException("Connection error.");
+		}
 	}
 	
 	public Map<String, Integer> getLimits(Type aType) {

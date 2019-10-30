@@ -10,8 +10,6 @@ import org.tacs.grupocuatro.github.exceptions.GitHubConnectionException;
 import org.tacs.grupocuatro.telegram.TelegramGHBot;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramCannotSetWebhookException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import static io.javalin.apibuilder.ApiBuilder.*;
 import static io.javalin.core.security.SecurityUtil.roles;
@@ -67,6 +65,8 @@ public class Server {
                 get(RepositoryController::all, roles(USER, ADMIN));
                 get("/count", RepositoryController::count, roles(ADMIN));
                 get("/:id", RepositoryController::one, roles(USER, ADMIN));
+
+                get("/:author/:name/commits", RepositoryController::commits);
             });
         });
     }
