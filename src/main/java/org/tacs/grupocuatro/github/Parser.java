@@ -7,6 +7,8 @@ import java.util.Arrays;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.tacs.grupocuatro.github.entity.ContributorGitHub;
+import org.tacs.grupocuatro.github.entity.ContributorsGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 
@@ -83,5 +85,74 @@ public class Parser {
 		return repo;
 		
 	}
-	
+
+    public static ContributorsGitHub parseContributors(HttpResponse<String> response) {
+		String resp = response.body();
+
+		if (resp.equals("")) {
+			return new ContributorsGitHub();
+		}
+
+		JSONArray jsonArray = new JSONArray(resp);
+
+		List<ContributorGitHub> contributors = new ArrayList<>();
+		ContributorsGitHub contributorsGitHub = new ContributorsGitHub();
+
+		for(int n=0; n<jsonArray.length(); n++) {
+
+			JSONObject contributorJson = jsonArray.getJSONObject(n);
+
+			contributors.add(Parser.parseContributor(contributorJson));
+
+		}
+
+		contributorsGitHub.setContributors(contributors);
+
+		String headerLinks = response.headers().firstValue("Link").orElse(null);
+
+		if(headerLinks == null) {
+
+			contributorsGitHub.setFirstPage(null);
+			contributorsGitHub.setLastPage(null);
+			contributorsGitHub.setNextPage(null);
+			contributorsGitHub.setPrevPage(null);
+
+		} else {
+
+			List<String> links = Arrays.asList(response.headers().firstValue("Link").orElse("").split(","));
+
+			for(String link : links) {
+
+				String[] linkRel = link.split(";");
+				String url = linkRel[0].replaceAll("<|>| ", "");
+
+				if(linkRel[1].contains("first")){
+					contributorsGitHub.setFirstPage(url);
+				} else if(linkRel[1].contains("last")) {
+					contributorsGitHub.setLastPage(url);
+
+				} else if(linkRel[1].contains("next")) {
+					contributorsGitHub.setNextPage(url);
+
+				} else if(linkRel[1].contains("prev")) {
+					contributorsGitHub.setPrevPage(url);
+				}
+
+			}
+
+		}
+
+		return contributorsGitHub;
+    }
+
+	private static ContributorGitHub parseContributor(JSONObject json) {
+		ContributorGitHub repo = new ContributorGitHub(
+				json.optLong("id", 0),
+				json.optString("login", null),
+				json.optString("avatar_url", null),
+				json.optString("html_url", null),
+				json.optInt("contributions", 0));
+
+		return repo;
+	}
 }

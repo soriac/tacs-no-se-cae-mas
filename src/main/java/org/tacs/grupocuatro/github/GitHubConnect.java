@@ -1,6 +1,7 @@
 package org.tacs.grupocuatro.github;
 
 import org.tacs.grupocuatro.github.GitHubRequest.Type;
+import org.tacs.grupocuatro.github.entity.ContributorsGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.enums.Order;
@@ -82,4 +83,9 @@ public class GitHubConnect {
 		return request.getLimits(Type.SEARCH);
 		
 	}
+
+    public ContributorsGitHub getRepositoryContributorsById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException{
+        GitHubRequest request = new GitHubRequest(this.token);
+        return request.doRepositoryContributorsById(id);
+    }
 }
