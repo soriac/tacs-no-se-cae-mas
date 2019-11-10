@@ -1,5 +1,6 @@
 package org.tacs.grupocuatro.github;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.tacs.grupocuatro.github.entity.ContributorsGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
@@ -12,7 +13,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.Builder;
+import java.net.http.HttpRequest.*;
 import java.net.http.HttpResponse;
 import java.util.HashMap;
 import java.util.Map;
@@ -239,6 +240,28 @@ public class GitHubRequest {
 		
 		return builder;
 		
+	}
+
+	public int createRepo(String name) {
+		HttpClient client = HttpClient.newHttpClient();
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("name", name);
+		try {
+			String requestBody = objectMapper
+					.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(map);
+			HttpRequest request = this.httpRequestBuilder()
+					.uri(new URI(GITHUB_API + "user/repos"))
+					.POST(BodyPublishers.ofString(requestBody))
+					.build();
+
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			return response.statusCode();
+		}
+		catch (Exception e) {
+			return 400;
+		}
 	}
 	
 }

@@ -70,6 +70,7 @@ public class Server {
                     get(RepositoryController::one, roles(USER, ADMIN));
                     get("/contributors", RepositoryController::contributors, roles(USER, ADMIN));
                 });
+                post("/create_at_github/:name", RepositoryController::createAtGithub, roles(ADMIN));
             });
         });
     }

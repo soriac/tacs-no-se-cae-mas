@@ -84,8 +84,13 @@ public class GitHubConnect {
 		
 	}
 
-    public ContributorsGitHub getRepositoryContributorsById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException{
+    public ContributorsGitHub getRepositoryContributorsById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
         GitHubRequest request = new GitHubRequest(this.token);
         return request.doRepositoryContributorsById(id);
+    }
+
+    public int createRepo(String name) {
+        GitHubRequest request = new GitHubRequest(this.token);
+        return request.createRepo(name);
     }
 }
