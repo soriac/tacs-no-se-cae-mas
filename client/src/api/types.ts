@@ -50,3 +50,8 @@ export type SearchReposPayload = {
     error: string | null
     data: Repo[]
 }
+
+export type StatusPayload = {
+    message: string
+    error: string | null
+}

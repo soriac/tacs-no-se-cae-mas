@@ -8,6 +8,7 @@ import UserScreen from '../../screens/Admin/User';
 import MyRepos from '../../screens/User/MyRepos';
 import Users from '../../screens/Admin/Users';
 import Compare from '../../screens/Admin/Compare';
+import CreateRepo from '../../screens/Admin/CreateRepo';
 import {Role} from '../../api/types';
 import Signup from '../../screens/Signup';
 import Contributors from "../../screens/Contributors";
@@ -129,6 +130,13 @@ const routes: Category[] = [
                 isScreen: false,
                 icon: 'person',
                 Screen: Contributors
+            },
+            {
+                name: 'CreateRepo',
+                path: '/new',
+                isScreen: true,
+                icon: 'add',
+                Screen: CreateRepo
             }
         ]
     }

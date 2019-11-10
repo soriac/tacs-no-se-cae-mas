@@ -153,3 +153,14 @@ export function removeFromFavorites(id: string) {
         }
     });
 }
+
+const CREATE_AT_GITHUB = (name: string) => `${BASE_URL}/repos/create_at_github/${name}`;
+
+export function createAtGithub(name: string) {
+    return fetch(CREATE_AT_GITHUB(name), {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
