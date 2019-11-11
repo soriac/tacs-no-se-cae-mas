@@ -54,7 +54,7 @@ public class AuthenticationController {
         User user = userDao.findByUser(data.getEmail());
 
         // no existe el usuario
-            if (user == null) {
+        if (user == null) {
             ctx.status(404).json(new JsonResponse("", "User not found, or password is wrong"));
         } else {
             var result = BCrypt.verifyer().verify(data.getPassword().toCharArray(), user.getPassword());

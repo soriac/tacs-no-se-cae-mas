@@ -1,6 +1,7 @@
 package org.tacs.grupocuatro.github;
 
 import org.tacs.grupocuatro.github.GitHubRequest.Type;
+import org.tacs.grupocuatro.github.entity.ContributorsGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryCommit;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
@@ -84,8 +85,19 @@ public class GitHubConnect {
 		
 	}
 
+
     public List<RepositoryCommit> getRepositoryWithCommits(String author, String name) {
         var request = new GitHubRequest(this.token);
         return request.getRepositoryWithCommits(author, name);
+    }
+
+    public ContributorsGitHub getRepositoryContributorsById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
+        GitHubRequest request = new GitHubRequest(this.token);
+        return request.doRepositoryContributorsById(id);
+    }
+
+    public int createRepo(String name) {
+        GitHubRequest request = new GitHubRequest(this.token);
+        return request.createRepo(name);
     }
 }

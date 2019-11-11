@@ -8,9 +8,11 @@ import UserScreen from '../../screens/Admin/User';
 import MyRepos from '../../screens/User/MyRepos';
 import Users from '../../screens/Admin/Users';
 import Compare from '../../screens/Admin/Compare';
+import CreateRepo from '../../screens/Admin/CreateRepo';
 import {Role} from '../../api/types';
 import Signup from '../../screens/Signup';
 import Commits from '../../screens/User/RepoCommits';
+import Contributors from "../../screens/Contributors";
 
 // isScreen is true when a route should show up in navigation bars
 type Route = {
@@ -78,8 +80,15 @@ const routes: Category[] = [
                 name: 'Commits',
                 path: '/commits',
                 isScreen: true,
-                icon: 'list',
+                icon: 'git-commit',
                 Screen: Commits
+            },
+            {
+                name: 'Contributors',
+                path: '/repos/:id/contributors',
+                isScreen: false,
+                icon: 'person',
+                Screen: Contributors
             }
 
         ]
@@ -122,6 +131,20 @@ const routes: Category[] = [
                 isScreen: false,
                 icon: 'person',
                 Screen: UserScreen
+            },
+            {
+                name: 'Contributors',
+                path: '/repos/:id/contributors',
+                isScreen: false,
+                icon: 'person',
+                Screen: Contributors
+            },
+            {
+                name: 'CreateRepo',
+                path: '/new',
+                isScreen: true,
+                icon: 'add',
+                Screen: CreateRepo
             }
         ]
     }

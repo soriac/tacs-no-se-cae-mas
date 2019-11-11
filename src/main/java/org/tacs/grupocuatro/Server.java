@@ -64,9 +64,13 @@ public class Server {
             path("/repos", () -> {
                 get(RepositoryController::all, roles(USER, ADMIN));
                 get("/count", RepositoryController::count, roles(ADMIN));
-                get("/:id", RepositoryController::one, roles(USER, ADMIN));
-
                 get("/:author/:name/commits", RepositoryController::commits, roles(USER, ADMIN));
+
+                path("/:id", () -> {
+                    get(RepositoryController::one, roles(USER, ADMIN));
+                    get("/contributors", RepositoryController::contributors, roles(USER, ADMIN));
+                });
+                post("/create_at_github/:name", RepositoryController::createAtGithub, roles(ADMIN));
             });
         });
     }

@@ -2,7 +2,9 @@ package org.tacs.grupocuatro.github;
 
 import org.json.JSONArray;
 import org.json.JSONException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
+import org.tacs.grupocuatro.github.entity.ContributorsGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoriesGitHub;
 import org.tacs.grupocuatro.github.entity.RepositoryCommit;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
@@ -14,7 +16,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
-import java.net.http.HttpRequest.Builder;
+import java.net.http.HttpRequest.*;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,19 +27,18 @@ import java.util.Map;
 public class GitHubRequest {
 	
 	private static String GITHUB_API = "https://api.github.com/";
-	
-	public enum Type{CORE,SEARCH}
-	
+
+	public enum Type{CORE,SEARCH;}
 	public String token;
-	
+
 	public GitHubRequest(String _token) {
 		this.token = _token;
 	}
 
 	public int doTest() {
-		
+
 		HttpClient client = HttpClient.newHttpClient();
-		
+
 		try {
 
 			HttpRequest request = this.httpRequestBuilder()
@@ -47,7 +48,7 @@ public class GitHubRequest {
 
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 			return response.statusCode();
-			
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -55,33 +56,33 @@ public class GitHubRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return -1;
-				
+
 	}
-	
+
 	public RepositoriesGitHub doSearchRepository(String query) throws GitHubRequestLimitExceededException {
-		
+
 		HttpClient client = HttpClient.newHttpClient();
-		
+
 		try {
-			
+
 			HttpRequest request = this.httpRequestBuilder()
 						.uri(new URI(GITHUB_API + "search/repositories" + query))
 						.GET()
 						.build();
 
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			
+
 			if(response.statusCode() == 403) {
 				throw new GitHubRequestLimitExceededException();
 			} else {
-				
+
 				RepositoriesGitHub repositories = Parser.parseRepositories(response);
 				return repositories;
-				
+
 			}
-		
+
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -92,23 +93,23 @@ public class GitHubRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
 
 	}
 
 	public RepositoryGitHub doRepositoryById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
-		
 		HttpClient client = HttpClient.newHttpClient();
-		
+
 		try {
 			HttpRequest request =  this.httpRequestBuilder()
 					.uri(new URI(GITHUB_API + "repositories" + "/" + id))
 					.GET()
+
 					.build();
-			
+
 			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-			
+
 			if(response.statusCode() == 403) {
 				throw new GitHubRequestLimitExceededException();
 			} else if (response.statusCode() == 404) {
@@ -117,12 +118,12 @@ public class GitHubRequest {
 
 				String resp = response.body();
 				JSONObject respJson = new JSONObject(resp);
-		 		
+
 		 		RepositoryGitHub repo = Parser.parseRepository(respJson);
 				return repo;
-	
+
 			}
-			
+
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -133,11 +134,12 @@ public class GitHubRequest {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 		return null;
-		
-		
+
+
 	}
+
 
 	public List<RepositoryCommit> getRepositoryWithCommits(String author, String name) {
 		var client = HttpClient.newHttpClient();
@@ -184,6 +186,41 @@ public class GitHubRequest {
 		}
 	}
 	
+	public ContributorsGitHub doRepositoryContributorsById(long id) throws GitHubRepositoryNotFoundException, GitHubRequestLimitExceededException {
+		HttpClient client = HttpClient.newHttpClient();
+
+		try {
+			HttpRequest request =  this.httpRequestBuilder()
+					.uri(new URI(GITHUB_API + "repositories" + "/" + id + "/contributors"))
+					.GET()
+
+					.build();
+
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+			if(response.statusCode() == 403) {
+				throw new GitHubRequestLimitExceededException();
+			} else if (response.statusCode() == 404) {
+				throw new GitHubRepositoryNotFoundException();
+		 	} else {
+		 		ContributorsGitHub contributors = Parser.parseContributors(response);
+				return contributors;
+			}
+
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
 	public Map<String, Integer> getLimits(Type aType) {
 		
 		HttpClient client = HttpClient.newHttpClient();
@@ -253,6 +290,28 @@ public class GitHubRequest {
 		
 		return builder;
 		
+	}
+
+	public int createRepo(String name) {
+		HttpClient client = HttpClient.newHttpClient();
+		ObjectMapper objectMapper = new ObjectMapper();
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("name", name);
+		try {
+			String requestBody = objectMapper
+					.writerWithDefaultPrettyPrinter()
+					.writeValueAsString(map);
+			HttpRequest request = this.httpRequestBuilder()
+					.uri(new URI(GITHUB_API + "user/repos"))
+					.POST(BodyPublishers.ofString(requestBody))
+					.build();
+
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			return response.statusCode();
+		}
+		catch (Exception e) {
+			return 400;
+		}
 	}
 	
 }

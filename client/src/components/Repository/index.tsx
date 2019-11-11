@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import {Button, Card} from '@blueprintjs/core';
 import {Repo} from '../../api/types';
+import {Link} from "react-router-dom";
 
 const Container = styled(Card)`
     width: 300px;
@@ -24,6 +25,8 @@ type Props = {
     addToFavorites?: (id: string) => Promise<void>
     removeFromFavorites?: (id: string) => Promise<void>
 }
+
+
 const Repository: React.FC<Props> = ({repo, addToFavorites, removeFromFavorites}) => {
 
     return (
@@ -40,6 +43,8 @@ const Repository: React.FC<Props> = ({repo, addToFavorites, removeFromFavorites}
                     : removeFromFavorites &&
                   <Button intent='danger' onClick={() => removeFromFavorites(repo.id)}>Remove</Button>
             }
+            <Link to={`repos/${repo.id}/contributors`}><Button intent={"primary"}>View contributors</Button></Link>
+
         </Container>
     );
 

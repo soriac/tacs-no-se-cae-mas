@@ -99,6 +99,17 @@ export function reposCount(since: Date, filterByDate: boolean) {
     });
 }
 
+const GET_CONTRIBUTORS = (id: string) => `${BASE_URL}/repos/${id}/contributors`;
+
+export function getContributorsOfRepo(id: string) {
+    return fetch(GET_CONTRIBUTORS(id), {
+        method: 'GET', 
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    })
+}
+
 const MY_REPOS = () => `${BASE_URL}/users/me/favorites`;
 
 export function myRepos() {
@@ -146,9 +157,20 @@ export function removeFromFavorites(id: string) {
 const COMMITS = (author: string, name: string) => `${BASE_URL}/repos/${author}/${name}/commits`;
 
 export function getCommitsForRepo(author: string, name: string) {
-    console.log(getToken());
     return fetch(COMMITS(author, name), {
         method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+
+const CREATE_AT_GITHUB = (name: string) => `${BASE_URL}/repos/create_at_github/${name}`;
+
+export function createAtGithub(name: string) {
+    return fetch(CREATE_AT_GITHUB(name), {
+        method: 'POST',
         headers: {
             'Authorization': `Bearer ${getToken()}`
         }
