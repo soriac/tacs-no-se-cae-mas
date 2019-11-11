@@ -51,6 +51,15 @@ export type SearchReposPayload = {
     data: Repo[]
 }
 
+export type Commit = {
+    sha: string
+    message: string
+    url: string
+    date: string
+    authorName: string
+    authorEmail: string
+}
+
 export type StatusPayload = {
     message: string
     error: string | null

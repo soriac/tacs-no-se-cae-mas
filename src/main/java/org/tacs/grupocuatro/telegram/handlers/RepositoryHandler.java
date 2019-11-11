@@ -1,5 +1,9 @@
 package org.tacs.grupocuatro.telegram.handlers;
 
+import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.Keyboard;
+import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.request.SendMessage;
 import org.tacs.grupocuatro.github.GitHubConnect;
 import org.tacs.grupocuatro.github.entity.RepositoryGitHub;
 import org.tacs.grupocuatro.github.exceptions.GitHubRepositoryNotFoundException;
@@ -8,12 +12,6 @@ import org.tacs.grupocuatro.telegram.entity.TelegramUserSession;
 import org.tacs.grupocuatro.telegram.entity.TelegramUserSession.SessionState;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramHandlerNotExistsException;
 import org.tacs.grupocuatro.telegram.exceptions.TelegramTokenNotFoundException;
-
-import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.ParseMode;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
-import com.pengrad.telegrambot.request.SendMessage;
 
 public class RepositoryHandler extends TelegramHandler{
 
@@ -26,7 +24,7 @@ public class RepositoryHandler extends TelegramHandler{
 		
 		long chatId = update.message().chat().id();
 		if(isUserLogged(chatId)) {
-			
+
 			TelegramUserSession session = sessions.getSessionByChatId(chatId).get();
 			
 			if(command.equals("/repositorio") && session.state == SessionState.PRINCIPAL) {
@@ -38,7 +36,6 @@ public class RepositoryHandler extends TelegramHandler{
 			} else if(command.equals("/3") && session.state == SessionState.MENU_REPOSITORIO){
 				this.volver(update);
 			} else {
-				
 				if(session.state == SessionState.REPOSITORIO_ID) {
 					this.buscarRepoId(update);
 				} else if (session.state == SessionState.REPOSITORIO_NOMBRE) {
@@ -46,9 +43,7 @@ public class RepositoryHandler extends TelegramHandler{
 				} else {
 					this.handleCommandNext(command, update, 1);
 				}
-				
 			}
-			
 		} else {
 			this.handleCommandNext(command, update, 2);
 		}

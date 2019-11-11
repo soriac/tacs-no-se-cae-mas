@@ -6,7 +6,7 @@ import {Repo, User} from '../../../api/types';
 import UserSelect from './UserSelect';
 import {ContentContainer} from '../../../components/ContentContainer';
 import {Root} from '../../../components/Root';
-import UserComponent from "../../../components/User";
+import UserComponent from '../../../components/User';
 
 const ComparatorContainer = styled.div`
     display: flex;

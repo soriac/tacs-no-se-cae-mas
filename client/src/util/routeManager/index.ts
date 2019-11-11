@@ -11,6 +11,7 @@ import Compare from '../../screens/Admin/Compare';
 import CreateRepo from '../../screens/Admin/CreateRepo';
 import {Role} from '../../api/types';
 import Signup from '../../screens/Signup';
+import Commits from '../../screens/User/RepoCommits';
 import Contributors from "../../screens/Contributors";
 
 // isScreen is true when a route should show up in navigation bars
@@ -74,6 +75,13 @@ const routes: Category[] = [
                 isScreen: true,
                 icon: 'list',
                 Screen: MyRepos
+            },
+            {
+                name: 'Commits',
+                path: '/commits',
+                isScreen: true,
+                icon: 'git-commit',
+                Screen: Commits
             },
             {
                 name: 'Contributors',

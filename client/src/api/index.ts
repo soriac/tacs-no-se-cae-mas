@@ -154,6 +154,18 @@ export function removeFromFavorites(id: string) {
     });
 }
 
+const COMMITS = (author: string, name: string) => `${BASE_URL}/repos/${author}/${name}/commits`;
+
+export function getCommitsForRepo(author: string, name: string) {
+    return fetch(COMMITS(author, name), {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${getToken()}`
+        }
+    });
+}
+
+
 const CREATE_AT_GITHUB = (name: string) => `${BASE_URL}/repos/create_at_github/${name}`;
 
 export function createAtGithub(name: string) {

@@ -147,6 +147,19 @@ public class RepositoryController {
 
     }
 
+    public static void commits(Context ctx) {
+        var author = ctx.pathParam("author");
+        var name = ctx.pathParam("name");
+
+        var connect = GitHubConnect.getInstance();
+
+        try {
+            var commits = connect.getRepositoryWithCommits(author, name);
+            ctx.status(200).json(new JsonResponse("OK").with(commits));
+        } catch (Exception e) {
+            ctx.status(500).json(new JsonResponse("Error", e.getMessage()));
+        }
+    }
 	public static void contributors(Context ctx) {
 		var id = ctx.pathParam("id");
 		try {
