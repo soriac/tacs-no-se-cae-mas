@@ -23,15 +23,15 @@ public class TelegramGHBot {
     private TelegramGHBot() throws TelegramTokenNotFoundException{
 
         String token = System.getenv("GITHUB_TACS_TELEGRAM");
-        
+
         if (token == null) {
             throw new TelegramTokenNotFoundException();
         } else {
-        	
+
         	this.bot = new TelegramBot(token);
 
         }
-        
+
         this.token = token;
 
     }
@@ -39,48 +39,50 @@ public class TelegramGHBot {
     public TelegramBot getTGBot() {
     	return this.bot;
     }
-    
+
     public String getToken() {
     	return this.token;
     }
-    
+
     public static TelegramGHBot getInstance() throws TelegramTokenNotFoundException {
         if (instance == null) {
             instance = new TelegramGHBot();
         }
         return instance;
     }
-	
+
     public void start(String webhook) throws TelegramCannotSetWebhookException, TelegramTokenNotFoundException {
     	this.webhook = webhook;
     	this.setWebHook();
     	this.setHandlers();
     }
-	
-    
+
+
     public void setWebHook() throws TelegramCannotSetWebhookException {
-    	    	
+
     	SetWebhook request = new SetWebhook()
     			.url(this.webhook);
 
         BaseResponse resp = this.bot.execute(request);
-    	
+
     	if(!resp.isOk()) {
     		throw new TelegramCannotSetWebhookException(resp.description());
     	}
-    	
+
     }
-    
+
     public void setHandlers() throws TelegramTokenNotFoundException {
     	TelegramHandler telegramHandler = new SessionHandler();
     	telegramHandler
             .linkNext(new CommitHandler())
-    				.linkNext(new RepositoryHandler())
+            .linkNext(new RepositoryHandler())
+            .linkNext(new CreateRepositoryHandler())
             .linkNext(new ContributorHandler())
-    				.linkNext(new PingHandler())
-    				.linkNext(new DefaultHandler());
+            .linkNext(new PingHandler())
+            .linkNext(new DefaultHandler());
 
         this.handler = telegramHandler;
+
     }
     
     public void handleUpdate(Update update) {

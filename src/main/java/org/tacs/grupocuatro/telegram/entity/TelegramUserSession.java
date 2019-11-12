@@ -14,7 +14,8 @@ public class TelegramUserSession {
 		REPOSITORIO_NOMBRE,
 		REPOSITORIO_ID,
 		COMMITS_REPO_NOMBRE,
-		REPOSITORIO_ID_CONTRIBUTORS
+		REPOSITORIO_ID_CONTRIBUTORS,
+		CREATE_REPO
 	};
 	
 	public TelegramUserSession(User user, long chatId) {
