@@ -280,6 +280,40 @@ public class GitHubRequest {
 		
 	}
 	
+	public List<String> getTags(String urlTags) {
+		
+		HttpClient client = HttpClient.newHttpClient();
+		
+		try {
+			
+			HttpRequest request =  this.httpRequestBuilder()
+					.header("Accept", "application/vnd.github.mercy-preview+json")
+					.uri(new URI(urlTags))
+					.GET()
+					.build();
+	
+			HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+			
+			String resp = response.body();
+			JSONObject respJson = new JSONObject(resp);
+			
+			return Parser.parseTags(respJson);
+			
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	
 	private Builder httpRequestBuilder(){
 		
 		Builder builder = HttpRequest.newBuilder();

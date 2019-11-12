@@ -100,4 +100,10 @@ public class GitHubConnect {
         GitHubRequest request = new GitHubRequest(this.token);
         return request.createRepo(name);
     }
+    
+    public List<String> findTags(String urlTags) {
+		GitHubRequest request = new GitHubRequest(this.token);
+		return request.getTags(urlTags);
+	}
+    
 }

@@ -114,8 +114,9 @@ public class RepositoryHandler extends TelegramHandler{
 					+ "Nombre: " + repo.getName() + "\n"
 					+ "\ud83c\udf1f: " + repo.getNumStars() + "\n"
 					+ "\ud83c\udf74: " + repo.getNumForks() + "\n"
-					+ "Lenguaje:" + repo.getLanguage();
-			
+					+ "Lenguaje: " + repo.getLanguage() + "\n"
+					+ "Tags: " + repo.getTagsAsString();
+
 			sessions.modStateSession(chatId, SessionState.PRINCIPAL);
 			SendMessage req = new SendMessage(chatId, message);
 			bot.getTGBot().execute(req);

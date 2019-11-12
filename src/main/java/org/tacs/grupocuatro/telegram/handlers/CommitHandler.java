@@ -55,6 +55,8 @@ public class CommitHandler extends TelegramHandler {
                         bot.getTGBot().execute(req);
                     }
                 }
+            } else {
+                this.handleCommandNext(command, update, 2);
             }
         } else {
             this.handleCommandNext(command, update, 2);

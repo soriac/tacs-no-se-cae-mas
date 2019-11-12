@@ -6,7 +6,7 @@ public class RepositoryGitHubWithFavCount extends RepositoryGitHub {
     private long favCount;
 
     public RepositoryGitHubWithFavCount(RepositoryGitHub old, long favCount) {
-        super(old.getId(), old.getName(), old.getNumForks(), old.getNumStars(), old.getLanguage());
+        super(old.getId(), old.getName(), old.getNumForks(), old.getNumStars(), old.getLanguage(), old.getTags());
         this.setFavCount(favCount);
     }
 

@@ -1,6 +1,8 @@
 package org.tacs.grupocuatro.github;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,15 +77,28 @@ public class Parser {
 	
 	public static RepositoryGitHub parseRepository(JSONObject json) {
 		
+		String urlTags = json.optString("url",null);
+		List<String> tags = new ArrayList<String>();
+		
+		if(urlTags != null) {
+			tags = GitHubConnect.getInstance().findTags(urlTags + "/topics");
+		}
+		
 		RepositoryGitHub repo = new RepositoryGitHub(
 				json.optLong("id", 0),
 				json.optString("full_name", null),
 				json.optInt("forks_count", 0),
 				json.optInt("stargazers_count", 0),
-				json.optString("language", null));
-		
+				json.optString("language", null),
+				tags);
 		return repo;
 		
+	}
+	
+	public static List<String> parseTags(JSONObject json){
+		return json.getJSONArray("names").toList().stream()
+				.map(object -> Objects.toString(object, null))
+				.collect(Collectors.toList());
 	}
 
     public static ContributorsGitHub parseContributors(HttpResponse<String> response) {
@@ -155,4 +170,5 @@ public class Parser {
 
 		return repo;
 	}
+
 }
